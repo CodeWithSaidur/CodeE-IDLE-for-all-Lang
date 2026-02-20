@@ -27,7 +27,7 @@
             </linearGradient>
           </defs>
         </svg>
-        <span class="app-name">SCode</span>
+        <span class="app-name">SCode by Saidur</span>
       </div>
       <nav class="menu-bar" id="menuBar">
         <!-- File -->
@@ -82,6 +82,8 @@
                 style="background:#4F5D95"></span>PHP</button>
             <button class="drop-item lang-item" data-lang="HTML"><span class="lang-dot"
                 style="background:#e34c26"></span>HTML</button>
+            <button class="drop-item lang-item" data-lang="SQL"><span class="lang-dot"
+                style="background:#e38c00"></span>SQL</button>
           </div>
         </div>
         <!-- Download -->
@@ -99,7 +101,9 @@
             <button class="drop-item" data-url="https://nodejs.org/en/download/prebuilt-installer"><span
                 class="drop-icon">🟢</span>JavaScript (Node.js)</button>
             <button class="drop-item" data-url="https://www.apachefriends.org/download.html"><span
-                class="drop-icon">🐘</span>PHP (XAMPP)</button>
+                class="drop-icon">🐘</span>PHP / SQL (XAMPP)</button>
+            <button class="drop-item" data-url="https://www.mysql.com/downloads/"><span
+                class="drop-icon">🐬</span>MySQL</button>
           </div>
         </div>
         <!-- About -->
@@ -154,6 +158,16 @@
             autocapitalize="off" placeholder="Start coding…"></textarea>
           <pre class="syntax-highlight" id="syntaxHighlight" aria-hidden="true"></pre>
         </div>
+      </div>
+
+      <!-- SQL embedded view -->
+      <div class="sql-view hidden" id="sqlView">
+        <div class="sql-browser-header">
+          <span class="material-icons">storage</span>
+          <span>SQL Monitor (phpMyAdmin)</span>
+          <button class="sql-refresh-btn" id="sqlRefresh"><span class="material-icons">refresh</span></button>
+        </div>
+        <webview id="sqlWebview" src="about:blank" style="width:100%; height:100%"></webview>
       </div>
 
       <!-- Resize handle -->

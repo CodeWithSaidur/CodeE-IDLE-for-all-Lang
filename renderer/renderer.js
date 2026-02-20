@@ -139,6 +139,22 @@ echo greet("World") . "\\n";
 </body>
 </html>
 `,
+    SQL: `-- SQL Example - Hello World
+SELECT 'Hello World' AS Greeting;
+
+-- Example: create table
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE
+);
+
+-- Example: insert data
+INSERT INTO users (name, email) VALUES ('Saidur', 'saidur@example.com');
+
+-- Example: select data
+SELECT * FROM users ORDER BY name ASC;
+`,
 };
 
 // ── Language config ──────────────────────────────────────────
@@ -151,6 +167,7 @@ const LANG_CONFIG = {
     JavaScript: { ext: 'js', dot: '#f1e05a', label: 'JavaScript' },
     PHP: { ext: 'php', dot: '#4F5D95', label: 'PHP' },
     HTML: { ext: 'html', dot: '#e34c26', label: 'HTML' },
+    SQL: { ext: 'sql', dot: '#e38c00', label: 'SQL' },
 };
 
 // ── DOM refs ─────────────────────────────────────────────────
@@ -174,6 +191,10 @@ const statusZoom = document.getElementById('statusZoom');
 const toast = document.getElementById('toast');
 const inputModal = document.getElementById('inputModal');
 const modalInput = document.getElementById('modalInput');
+
+const sqlView = document.getElementById('sqlView');
+const sqlWebview = document.getElementById('sqlWebview');
+const sqlRefresh = document.getElementById('sqlRefresh');
 
 // ══════════════════════════════════════
 // Init
@@ -210,14 +231,25 @@ function setLanguage(lang, applyTemplate = true) {
         : `untitled.${cfg.ext}`;
     document.title = `SCode – ${cfg.label}`;
 
-    // Hide terminal for HTML (opens in browser), show for all others
+    // Hide terminal for HTML/SQL (SQL is embedded), show for all others
     const isHtml = lang === 'HTML';
-    terminalPanel.classList.toggle('terminal-hidden', isHtml);
-    resizeHandle.style.display = isHtml ? 'none' : '';
-    if (isHtml && applyTemplate) {
-        showToast('HTML opens in your default browser ▶');
+    const isSql = lang === 'SQL';
+
+    terminalPanel.classList.toggle('terminal-hidden', isHtml || isSql);
+    resizeHandle.style.display = (isHtml || isSql) ? 'none' : '';
+
+    // Handle embedded SQL view
+    sqlView.classList.toggle('hidden', !isSql);
+    if (isSql) {
+        showToast('Loading SQL Monitor inside SCode...');
+        sqlWebview.src = 'http://localhost/phpmyadmin/index.php?route=/server/sql';
+    } else {
+        sqlWebview.src = 'about:blank';
     }
 
+    if (isHtml && applyTemplate) {
+        showToast(`${lang} opens in your default browser ▶`);
+    }
 
     document.querySelectorAll('.lang-item').forEach(b => {
         b.classList.toggle('active', b.dataset.lang === lang);
@@ -333,6 +365,14 @@ const LANG_RULES = {
         { cls: 'tok-tag', re: /(<\/?\s*[\w-]+)/ },
         { cls: 'tok-attr-name', re: /\b([\w-]+)\s*=/ },
         { cls: 'tok-operator', re: /(<\/?|\/?>)/ },
+    ],
+    SQL: [
+        { cls: 'tok-comment', re: /(--.*$|\/\*[\s\S]*?\*\/)/m },
+        { cls: 'tok-string', re: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
+        { cls: 'tok-keyword', re: /\b(ADD|ALL|ALTER|AND|ANY|AS|ASC|BACKUP|BETWEEN|CASE|CHECK|COLUMN|CONSTRAINT|CREATE|DATABASE|DEFAULT|DELETE|DESC|DISTINCT|DROP|EXEC|EXISTS|FOREIGN|FROM|FULL|GROUP|HAVING|IN|INDEX|INNER|INSERT|IS|JOIN|LEFT|LIKE|LIMIT|NOT|NULL|OR|ORDER|OUTER|PRIMARY|PROCEDURE|REPLACE|RIGHT|ROW|SELECT|SET|TABLE|TOP|TRUNCATE|UNION|UNIQUE|UPDATE|VALUES|VIEW|WHERE|BY|HAVING|ORDER|GROUP|INTO|SET|ADD|CONSTRAINT|KEY|IF|EXISTS|DATABASE|SCHEMA|TABLE|PROCEDURE|FUNCTION|TRIGGER|VIEW|INDEX|USER|GRANT|REVOKE|COMMIT|ROLLBACK|SAVEPOINT)\b/i },
+        { cls: 'tok-builtin', re: /\b(INT|VARCHAR|TEXT|DATE|DATETIME|TIMESTAMP|BOOLEAN|FLOAT|DOUBLE|DECIMAL|CHAR|BLOB|LONGTEXT|TINYINT|SMALLINT|BIGINT|JSON)\b/i },
+        { cls: 'tok-number', re: /\b(\d+\.?\d*)\b/ },
+        { cls: 'tok-operator', re: /(=|!=|<>|<|>|<=|>=|\+|\-|\*|\/|%)/ },
     ],
 };
 
@@ -522,6 +562,7 @@ function setupMenus() {
     document.getElementById('termTabOutput').addEventListener('click', () => switchTermTab('output'));
     document.getElementById('termInput').addEventListener('click', openModal);
 
+
     // Terminal input send
     // Modal logic
     document.getElementById('closeModal').addEventListener('click', closeModal);
@@ -541,6 +582,12 @@ function setupMenus() {
             modalInput.value = '';
             closeModal();
         }
+    });
+
+    // SQL Refresh
+    sqlRefresh.addEventListener('click', () => {
+        sqlWebview.reload();
+        showToast('Refreshing SQL Monitor...');
     });
 
     // Tab close
@@ -797,6 +844,7 @@ function showToast(msg) {
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
 }
+
 
 // ══════════════════════════════════════
 // Start
