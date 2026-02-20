@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="SCode – A modern, multi-language code editor"/>
+  <title>SCode</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ TITLE BAR ═══════════════════════════ -->
+<div class="titlebar" id="titlebar">
+  <div class="titlebar-left">
+    <div class="app-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M8 3L3 8V21H16L21 16V3H8Z" fill="url(#logoGrad)" stroke="none"/>
+        <path d="M16 21V16H21" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <text x="6" y="15" font-family="JetBrains Mono" font-size="7" font-weight="700" fill="white">S</text>
+        <defs>
+          <linearGradient id="logoGrad" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#2563eb"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="app-name">SCode</span>
+    </div>
+    <nav class="menu-bar" id="menuBar">
+      <!-- File -->
+      <div class="menu-item">
+        <button class="menu-btn" id="menuFile">File</button>
+        <div class="dropdown" id="dropFile">
+          <button class="drop-item" id="btnOpen"><span class="drop-icon">📂</span>Open File<span class="shortcut">Ctrl+O</span></button>
+          <button class="drop-item" id="btnSave"><span class="drop-icon">💾</span>Save<span class="shortcut">Ctrl+S</span></button>
+          <button class="drop-item" id="btnSaveAs"><span class="drop-icon">📝</span>Save As…<span class="shortcut">Ctrl+Shift+S</span></button>
+          <div class="drop-sep"></div>
+          <button class="drop-item" id="btnExit"><span class="drop-icon">🚪</span>Exit</button>
+        </div>
+      </div>
+      <!-- Tools -->
+      <div class="menu-item">
+        <button class="menu-btn" id="menuTools">Tools</button>
+        <div class="dropdown" id="dropTools">
+          <button class="drop-item" id="btnRun"><span class="drop-icon">▶</span>Run Code<span class="shortcut">Alt+R</span></button>
+          <button class="drop-item" id="btnKill"><span class="drop-icon">⏹</span>Stop Process<span class="shortcut">Alt+K</span></button>
+          <button class="drop-item" id="btnClear"><span class="drop-icon">🗑</span>Clear Terminal<span class="shortcut">Alt+D</span></button>
+          <div class="drop-sep"></div>
+          <button class="drop-item" id="btnWordWrap"><span class="drop-icon">↩</span>Toggle Word Wrap</button>
+          <button class="drop-item" id="btnLineNum"><span class="drop-icon">#</span>Toggle Line Numbers</button>
+        </div>
+      </div>
+      <!-- Language -->
+      <div class="menu-item">
+        <button class="menu-btn" id="menuLang">Language</button>
+        <div class="dropdown" id="dropLang">
+          <button class="drop-item lang-item active" data-lang="Python"><span class="lang-dot" style="background:#3572A5"></span>Python</button>
+          <button class="drop-item lang-item" data-lang="C"><span class="lang-dot" style="background:#555555"></span>C</button>
+          <button class="drop-item lang-item" data-lang="C++"><span class="lang-dot" style="background:#f34b7d"></span>C++</button>
+          <button class="drop-item lang-item" data-lang="C#"><span class="lang-dot" style="background:#178600"></span>C#</button>
+          <button class="drop-item lang-item" data-lang="Java"><span class="lang-dot" style="background:#b07219"></span>Java</button>
+          <button class="drop-item lang-item" data-lang="JavaScript"><span class="lang-dot" style="background:#f1e05a"></span>JavaScript</button>
+          <button class="drop-item lang-item" data-lang="PHP"><span class="lang-dot" style="background:#4F5D95"></span>PHP</button>
+          <button class="drop-item lang-item" data-lang="HTML"><span class="lang-dot" style="background:#e34c26"></span>HTML</button>
+        </div>
+      </div>
+      <!-- Download -->
+      <div class="menu-item">
+        <button class="menu-btn" id="menuDownload">Download</button>
+        <div class="dropdown" id="dropDownload">
+          <button class="drop-item" data-url="https://www.python.org/downloads/"><span class="drop-icon">🐍</span>Python</button>
+          <button class="drop-item" data-url="https://sourceforge.net/projects/mingw/"><span class="drop-icon">⚙️</span>C / C++ (MinGW)</button>
+          <button class="drop-item" data-url="https://dotnet.microsoft.com/en-us/download"><span class="drop-icon">🔷</span>C# (.NET)</button>
+          <button class="drop-item" data-url="https://www.oracle.com/in/java/technologies/downloads/"><span class="drop-icon">☕</span>Java (JDK)</button>
+          <button class="drop-item" data-url="https://nodejs.org/en/download/prebuilt-installer"><span class="drop-icon">🟢</span>JavaScript (Node.js)</button>
+          <button class="drop-item" data-url="https://www.apachefriends.org/download.html"><span class="drop-icon">🐘</span>PHP (XAMPP)</button>
+        </div>
+      </div>
+      <!-- About -->
+      <div class="menu-item">
+        <button class="menu-btn" id="menuAbout">About</button>
+        <div class="dropdown" id="dropAbout">
+          <div class="drop-item no-hover"><span class="drop-icon">👨‍💻</span>Saidur Rohman Barbhuiya</div>
+          <div class="drop-item no-hover"><span class="drop-icon">📞</span>+91 9706216141</div>
+          <div class="drop-sep"></div>
+          <div class="drop-item no-hover"><span class="drop-icon">🛠</span>SCode v1.0.0 – Electron + Bun</div>
+        </div>
+      </div>
+    </nav>
+  </div>
+  <div class="titlebar-center">
+    <span class="file-title" id="fileTitle">untitled</span>
+    <span class="lang-badge" id="langBadge">Python</span>
+  </div>
+  <div class="titlebar-controls">
+    <button class="win-btn minimize" id="btnMinimize" title="Minimize">─</button>
+    <button class="win-btn maximize" id="btnMaximize" title="Maximize">□</button>
+    <button class="win-btn close" id="btnClose" title="Close">✕</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ MAIN LAYOUT ═══════════════════════ -->
+<div class="app-body">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <h2 class="sidebar-title">EXPLORER</h2>
+      <div class="sidebar-file-list" id="sidebarFileList">
+        <div class="sidebar-empty">No file open</div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <h2 class="sidebar-title">LANGUAGE</h2>
+      <div class="lang-list" id="langList">
+        <button class="lang-btn active" data-lang="Python">🐍 Python</button>
+        <button class="lang-btn" data-lang="C">⚙ C</button>
+        <button class="lang-btn" data-lang="C++">⚙ C++</button>
+        <button class="lang-btn" data-lang="C#">🔷 C#</button>
+        <button class="lang-btn" data-lang="Java">☕ Java</button>
+        <button class="lang-btn" data-lang="JavaScript">🟨 JS</button>
+        <button class="lang-btn" data-lang="PHP">🐘 PHP</button>
+        <button class="lang-btn" data-lang="HTML">🌐 HTML</button>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="sidebar-action-btn" id="btnRunSidebar" title="Run (Alt+R)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Run
+      </button>
+    </div>
+  </aside>
+
+  <!-- Editor + Terminal -->
+  <div class="editor-area">
+    <!-- Tab bar -->
+    <div class="tab-bar" id="tabBar">
+      <div class="tab active" id="mainTab">
+        <span class="tab-lang-dot" id="tabDot" style="background:#3572A5"></span>
+        <span class="tab-name" id="tabName">untitled.py</span>
+        <button class="tab-close" id="tabCloseBtn">✕</button>
+      </div>
+      <button class="new-tab-btn" id="newTabBtn" title="New tab">+</button>
+    </div>
+
+    <!-- Editor wrapper with line numbers -->
+    <div class="editor-wrapper" id="editorWrapper">
+      <div class="line-numbers" id="lineNumbers">1</div>
+      <div class="editor-content">
+        <textarea
+          id="codeEditor"
+          class="code-editor"
+          spellcheck="false"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          placeholder="Start coding…"
+        ></textarea>
+        <pre class="syntax-highlight" id="syntaxHighlight" aria-hidden="true"></pre>
+      </div>
+    </div>
+
+    <!-- Resize handle -->
+    <div class="resize-handle" id="resizeHandle"></div>
+
+    <!-- Terminal -->
+    <div class="terminal-panel" id="terminalPanel">
+      <div class="terminal-header">
+        <div class="terminal-tabs">
+          <button class="term-tab active" id="termTabOutput">OUTPUT</button>
+          <button class="term-tab" id="termTabInput">INPUT</button>
+        </div>
+        <div class="terminal-actions">
+          <span class="term-status" id="termStatus">Idle</span>
+          <button class="term-btn" id="termRun" title="Run (Alt+R)">▶ Run</button>
+          <button class="term-btn danger" id="termKill" title="Stop (Alt+K)">⏹ Stop</button>
+          <button class="term-btn" id="termClear" title="Clear (Alt+D)">🗑 Clear</button>
+        </div>
+      </div>
+      <div class="terminal-body" id="terminalBody">
+        <div id="terminalOutput" class="terminal-output">
+          <span class="term-welcome">Welcome to <strong>SCode</strong> Terminal — Press <kbd>Alt+R</kbd> to run your code.</span>
+        </div>
+        <div id="terminalInputPanel" class="terminal-input-panel hidden">
+          <textarea id="terminalInput" class="terminal-input-box" placeholder="Send input to running process…" rows="3"></textarea>
+          <button class="term-send-btn" id="termSendBtn">Send ↵</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ STATUS BAR ════════════════════════ -->
+<div class="statusbar">
+  <span class="status-item" id="statusLang">
+    <span class="status-dot" id="statusDot" style="background:#3572A5"></span>Python
+  </span>
+  <span class="status-item" id="statusCursor">Ln 1, Col 1</span>
+  <span class="status-item" id="statusLines">1 Lines</span>
+  <span class="status-item" id="statusEncoding">UTF-8</span>
+  <span class="status-item status-right" id="statusZoom">100%</span>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<script src="renderer.js"></script>
+</body>
+</html>

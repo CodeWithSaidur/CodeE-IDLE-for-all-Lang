@@ -1,0 +1,25 @@
+{
+  "name": "scode",
+  "version": "1.0.0",
+  "description": "SCode - A modern code editor built with Electron and Bun",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "build": {
+    "appId": "com.scode.editor",
+    "productName": "SCode",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  }
+}
