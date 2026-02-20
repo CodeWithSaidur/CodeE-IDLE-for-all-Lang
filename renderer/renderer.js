@@ -9,7 +9,6 @@ let currentLanguage = 'Python';
 let currentFilePath = null;
 let isDirty = false;
 let fontSize = 14;
-let showLineNumbers = true;
 let wordWrap = false;
 
 // ── Templates ────────────────────────────────────────────────
@@ -294,11 +293,6 @@ function updateAll() {
 }
 
 function updateLineNumbers() {
-    if (!showLineNumbers) {
-        lineNumbers.style.display = 'none';
-        return;
-    }
-    lineNumbers.style.display = '';
     const lines = editor.value.split('\n');
     lineNumbers.textContent = lines.map((_, i) => i + 1).join('\n');
     statusLines.textContent = `${lines.length} Lines`;
@@ -503,60 +497,6 @@ function setupEventListeners() {
     editor.addEventListener('click', updateCursorPos);
     editor.addEventListener('keyup', updateCursorPos);
 
-    // Ctrl + scroll → zoom
-    editor.addEventListener('wheel', (e) => {
-        if (e.ctrlKey) {
-            e.preventDefault();
-            if (e.deltaY < 0) adjustFontSize(1);
-            else adjustFontSize(-1);
-        }
-    }, { passive: false });
-
-    // Mouse wheel support for line numbers
-    lineNumbers.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        editor.scrollTop += e.deltaY;
-    }, { passive: false });
-
-    // Clicking line numbers to move cursor/select line
-    let isSelectingLines = false;
-    let startLineIdx = -1;
-
-    lineNumbers.addEventListener('mousedown', (e) => {
-        isSelectingLines = true;
-        const rect = lineNumbers.getBoundingClientRect();
-        const y = e.clientY - rect.top + lineNumbers.scrollTop;
-        const lineH = parseFloat(getComputedStyle(editor).lineHeight);
-        startLineIdx = Math.floor((y - 16) / lineH);
-        selectLines(startLineIdx, startLineIdx);
-    });
-
-    window.addEventListener('mousemove', (e) => {
-        if (!isSelectingLines) return;
-        const rect = lineNumbers.getBoundingClientRect();
-        const y = e.clientY - rect.top + lineNumbers.scrollTop;
-        const lineH = parseFloat(getComputedStyle(editor).lineHeight);
-        const currentLineIdx = Math.floor((y - 16) / lineH);
-        selectLines(startLineIdx, currentLineIdx);
-    });
-
-    window.addEventListener('mouseup', () => { isSelectingLines = false; });
-
-    function selectLines(from, to) {
-        const lines = editor.value.split('\n');
-        const start = Math.max(0, Math.min(from, to));
-        const end = Math.min(lines.length - 1, Math.max(from, to));
-
-        let startPos = 0;
-        for (let i = 0; i < start; i++) startPos += lines[i].length + 1;
-
-        let endPos = startPos;
-        for (let i = start; i <= end; i++) endPos += lines[i].length + (i === lines.length - 1 ? 0 : 1);
-
-        editor.focus();
-        editor.setSelectionRange(startPos, endPos);
-        updateCursorPos();
-    }
 }
 
 function updateTabDirty() {
@@ -600,7 +540,6 @@ function setupMenus() {
     document.getElementById('btnKill').addEventListener('click', killProcess);
     document.getElementById('btnClear').addEventListener('click', clearTerminal);
     document.getElementById('btnWordWrap').addEventListener('click', toggleWordWrap);
-    document.getElementById('btnLineNum').addEventListener('click', toggleLineNumbers);
 
     // Language menu (in menu bar)
     document.querySelectorAll('.lang-item').forEach(btn => {
@@ -820,7 +759,6 @@ function setupKeyboardShortcuts() {
     });
 }
 
-// ══════════════════════════════════════
 // Font/zoom
 // ══════════════════════════════════════
 function adjustFontSize(delta) {
@@ -831,16 +769,13 @@ function setFontSize(size) {
     const pct = Math.round((fontSize / 14) * 100);
     editor.style.fontSize = fontSize + 'px';
     highlight.style.fontSize = fontSize + 'px';
-    lineNumbers.style.fontSize = fontSize + 'px';
     editor.style.lineHeight = '1.7';
     highlight.style.lineHeight = '1.7';
-    lineNumbers.style.lineHeight = '1.7';
     statusZoom.textContent = pct + '%';
-    updateLineNumbers();
 }
 
 // ══════════════════════════════════════
-// Word wrap / Line numbers toggles
+// Word wrap toggle
 // ══════════════════════════════════════
 function toggleWordWrap() {
     wordWrap = !wordWrap;
@@ -849,12 +784,6 @@ function toggleWordWrap() {
     highlight.style.whiteSpace = wrapVal;
     editor.style.overflowWrap = wordWrap ? 'break-word' : 'normal';
     showToast(`Word wrap ${wordWrap ? 'ON' : 'OFF'}`);
-}
-
-function toggleLineNumbers() {
-    showLineNumbers = !showLineNumbers;
-    lineNumbers.style.display = showLineNumbers ? '' : 'none';
-    showToast(`Line numbers ${showLineNumbers ? 'ON' : 'OFF'}`);
 }
 
 // ══════════════════════════════════════

@@ -519,7 +519,7 @@ pre {
 .app-body {
   flex: 1;
   display: flex;
-  overflow: hidden;
+  overflow: auto;
   height: calc(100vh - var(--titlebar-h) - var(--statusbar-h));
 }
 
@@ -629,44 +629,46 @@ pre {
 .editor-wrapper {
   flex: 1;
   display: flex;
+  flex-direction: row;
   overflow: hidden;
   background: var(--bg-base);
-  position: relative;
   min-height: 0;
 }
 
-/* Line numbers */
+/* ── Line numbers (VS Code style) ─────────────────────── */
 .line-numbers {
-  padding: 16px 8px 16px 12px;
+  flex-shrink: 0;
+  width: 56px;
+  padding: 16px 10px 16px 0;
   background: var(--bg-dark);
-  border-right: 1px solid var(--border);
-  color: var(--text-muted);
+  color: #4a5568;
   font-family: var(--font-code);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.7;
-  user-select: none;
-  min-width: 48px;
   text-align: right;
   white-space: pre;
   overflow: hidden;
-  flex-shrink: 0;
-  cursor: pointer;
+  /* no scrollbar – JS syncs it */
+  user-select: none;
+  cursor: default;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Editor content */
+/* ── Editor content ────────────────────────────────────── */
 .editor-content {
   flex: 1;
   position: relative;
-  overflow: auto;
+  overflow: hidden;
 }
 
-/* The textarea (invisible – sits on top of syntax highlight) */
+/* Textarea – invisible but editable, sits on top */
 .code-editor {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  padding: 16px 16px 16px 8px;
+  padding: 16px 24px 16px 12px;
+  font-family: var(--font-code);
   font-size: 14px;
   line-height: 1.7;
   background: transparent;
@@ -678,7 +680,9 @@ pre {
   tab-size: 4;
   white-space: pre;
   overflow-wrap: normal;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: scroll;
+  /* always-visible vertical scrollbar on right */
   z-index: 2;
   letter-spacing: 0.3px;
 }
@@ -687,9 +691,11 @@ pre {
   background: rgba(124, 58, 237, 0.35);
 }
 
+/* VS Code-style scrollbar on the code editor */
 .code-editor::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: block;
+  width: 10px;
+  height: 10px;
 }
 
 .code-editor::-webkit-scrollbar-track {
@@ -697,15 +703,25 @@ pre {
 }
 
 .code-editor::-webkit-scrollbar-thumb {
-  background: var(--border-hi);
-  border-radius: 4px;
+  background: rgba(80, 80, 100, 0.5);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
-/* Syntax highlight (rendered behind textarea) */
+.code-editor::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 140, 180, 0.7);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Syntax highlight – rendered behind textarea */
 .syntax-highlight {
   position: absolute;
   inset: 0;
-  padding: 16px 16px 16px 8px;
+  padding: 16px 24px 16px 12px;
+  font-family: var(--font-code);
   font-size: 14px;
   line-height: 1.7;
   color: var(--text-primary);
@@ -713,6 +729,7 @@ pre {
   pointer-events: none;
   white-space: pre;
   overflow-wrap: normal;
+  overflow: hidden;
   z-index: 1;
   letter-spacing: 0.3px;
 }
@@ -857,14 +874,7 @@ pre {
   word-break: break-all;
 }
 
-.terminal-output::-webkit-scrollbar {
-  width: 6px;
-}
 
-.terminal-output::-webkit-scrollbar-thumb {
-  background: var(--border-hi);
-  border-radius: 3px;
-}
 
 .term-welcome {
   color: var(--text-muted);
@@ -1157,21 +1167,29 @@ pre {
 }
 
 /* ══════════════════ SCROLLBARS ════════════════════════════ */
+
+/* Hide scrollbars globally */
 ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Show scrollbar only on .app-body */
+.app-body::-webkit-scrollbar {
+  display: block;
   width: 8px;
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.app-body::-webkit-scrollbar-track {
+  background: var(--bg-dark);
 }
 
-::-webkit-scrollbar-thumb {
+.app-body::-webkit-scrollbar-thumb {
   background: var(--border-hi);
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.app-body::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
 
