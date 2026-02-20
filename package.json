@@ -4,9 +4,9 @@
   "description": "SCode - A modern code editor built with Electron and Bun",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron .",
-    "dev": "electron . --dev",
-    "build": "electron-builder"
+    "start": "node_modules/.bin/electron .",
+    "dev": "node_modules/.bin/electron .",
+    "build": "node_modules/.bin/electron-builder"
   },
   "devDependencies": {
     "electron": "^33.0.0",

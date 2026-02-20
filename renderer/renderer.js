@@ -159,6 +159,8 @@ const highlight = document.getElementById('syntaxHighlight');
 const lineNumbers = document.getElementById('lineNumbers');
 const terminalOutput = document.getElementById('terminalOutput');
 const terminalInput = document.getElementById('terminalInput');
+const terminalPanel = document.getElementById('terminalPanel');
+const resizeHandle = document.getElementById('resizeHandle');
 const termStatus = document.getElementById('termStatus');
 const langBadge = document.getElementById('langBadge');
 const fileTitle = document.getElementById('fileTitle');
@@ -205,6 +207,14 @@ function setLanguage(lang, applyTemplate = true) {
         ? currentFilePath.split(/[\\/]/).pop()
         : `untitled.${cfg.ext}`;
     document.title = `SCode – ${cfg.label}`;
+
+    // Hide terminal for HTML (opens in browser), show for all others
+    const isHtml = lang === 'HTML';
+    terminalPanel.classList.toggle('terminal-hidden', isHtml);
+    resizeHandle.style.display = isHtml ? 'none' : '';
+    if (isHtml && applyTemplate) {
+        showToast('HTML opens in your default browser ▶');
+    }
 
     // Highlight lang buttons in sidebar & dropdown
     document.querySelectorAll('.lang-btn').forEach(b => {
