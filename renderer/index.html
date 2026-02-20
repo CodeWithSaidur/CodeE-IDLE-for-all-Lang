@@ -7,6 +7,7 @@
   <meta name="description" content="SCode – A modern, multi-language code editor" />
   <title>SCode</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 </head>
 
 <body>
@@ -33,29 +34,32 @@
         <div class="menu-item">
           <button class="menu-btn" id="menuFile">File</button>
           <div class="dropdown" id="dropFile">
-            <button class="drop-item" id="btnOpen"><span class="drop-icon">📂</span>Open File<span
-                class="shortcut">Ctrl+O</span></button>
-            <button class="drop-item" id="btnSave"><span class="drop-icon">💾</span>Save<span
+            <button class="drop-item" id="btnOpen"><span class="material-icons drop-icon">folder_open</span>Open
+              File<span class="shortcut">Ctrl+O</span></button>
+            <button class="drop-item" id="btnSave"><span class="material-icons drop-icon">save</span>Save<span
                 class="shortcut">Ctrl+S</span></button>
-            <button class="drop-item" id="btnSaveAs"><span class="drop-icon">📝</span>Save As…<span
-                class="shortcut">Ctrl+Shift+S</span></button>
+            <button class="drop-item" id="btnSaveAs"><span class="material-icons drop-icon">edit_note</span>Save
+              As…<span class="shortcut">Ctrl+Shift+S</span></button>
             <div class="drop-sep"></div>
-            <button class="drop-item" id="btnExit"><span class="drop-icon">🚪</span>Exit</button>
+            <button class="drop-item" id="btnExit"><span
+                class="material-icons drop-icon">exit_to_app</span>Exit</button>
           </div>
         </div>
         <!-- Tools -->
         <div class="menu-item">
           <button class="menu-btn" id="menuTools">Tools</button>
           <div class="dropdown" id="dropTools">
-            <button class="drop-item" id="btnRun"><span class="drop-icon">▶</span>Run Code<span
+            <button class="drop-item" id="btnRun"><span class="material-icons drop-icon">play_arrow</span>Run Code<span
                 class="shortcut">Alt+R</span></button>
-            <button class="drop-item" id="btnKill"><span class="drop-icon">⏹</span>Stop Process<span
+            <button class="drop-item" id="btnKill"><span class="material-icons drop-icon">stop</span>Stop Process<span
                 class="shortcut">Alt+K</span></button>
-            <button class="drop-item" id="btnClear"><span class="drop-icon">🗑</span>Clear Terminal<span
-                class="shortcut">Alt+D</span></button>
+            <button class="drop-item" id="btnClear"><span class="material-icons drop-icon">delete_sweep</span>Clear
+              Terminal<span class="shortcut">Alt+D</span></button>
             <div class="drop-sep"></div>
-            <button class="drop-item" id="btnWordWrap"><span class="drop-icon">↩</span>Toggle Word Wrap</button>
-            <button class="drop-item" id="btnLineNum"><span class="drop-icon">#</span>Toggle Line Numbers</button>
+            <button class="drop-item" id="btnWordWrap"><span class="material-icons drop-icon">wrap_text</span>Toggle
+              Word Wrap</button>
+            <button class="drop-item" id="btnLineNum"><span
+                class="material-icons drop-icon">format_list_numbered</span>Toggle Line Numbers</button>
           </div>
         </div>
         <!-- Language -->
@@ -102,10 +106,12 @@
         <div class="menu-item">
           <button class="menu-btn" id="menuAbout">About</button>
           <div class="dropdown" id="dropAbout">
-            <div class="drop-item no-hover"><span class="drop-icon">👨‍💻</span>Saidur Rohman Barbhuiya</div>
-            <div class="drop-item no-hover"><span class="drop-icon">📞</span>+91 9706216141</div>
+            <div class="drop-item no-hover"><span class="material-icons drop-icon">person</span>Saidur Rohman Barbhuiya
+            </div>
+            <div class="drop-item no-hover"><span class="material-icons drop-icon">phone</span>+91 9706216141</div>
             <div class="drop-sep"></div>
-            <div class="drop-item no-hover"><span class="drop-icon">🛠</span>SCode v1.0.0 – Electron + Bun</div>
+            <div class="drop-item no-hover"><span class="material-icons drop-icon">info</span>SCode v1.0.0 – Electron +
+              Bun</div>
           </div>
         </div>
       </nav>
@@ -115,45 +121,18 @@
       <span class="lang-badge" id="langBadge">Python</span>
     </div>
     <div class="titlebar-controls">
-      <button class="win-btn minimize" id="btnMinimize" title="Minimize">─</button>
-      <button class="win-btn maximize" id="btnMaximize" title="Maximize">□</button>
-      <button class="win-btn close" id="btnClose" title="Close">✕</button>
+      <button class="win-btn minimize" id="btnMinimize" title="Minimize"><span
+          class="material-icons">remove</span></button>
+      <button class="win-btn maximize" id="btnMaximize" title="Maximize"><span
+          class="material-icons">crop_square</span></button>
+      <button class="win-btn close" id="btnClose" title="Close"><span class="material-icons">close</span></button>
     </div>
   </div>
 
   <!-- ═══════════════════════════════════════ MAIN LAYOUT ═══════════════════════ -->
   <div class="app-body">
 
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-section">
-        <h2 class="sidebar-title">EXPLORER</h2>
-        <div class="sidebar-file-list" id="sidebarFileList">
-          <div class="sidebar-empty">No file open</div>
-        </div>
-      </div>
-      <div class="sidebar-section">
-        <h2 class="sidebar-title">LANGUAGE</h2>
-        <div class="lang-list" id="langList">
-          <button class="lang-btn active" data-lang="Python">🐍 Python</button>
-          <button class="lang-btn" data-lang="C">⚙ C</button>
-          <button class="lang-btn" data-lang="C++">⚙ C++</button>
-          <button class="lang-btn" data-lang="C#">🔷 C#</button>
-          <button class="lang-btn" data-lang="Java">☕ Java</button>
-          <button class="lang-btn" data-lang="JavaScript">🟨 JS</button>
-          <button class="lang-btn" data-lang="PHP">🐘 PHP</button>
-          <button class="lang-btn" data-lang="HTML">🌐 HTML</button>
-        </div>
-      </div>
-      <div class="sidebar-bottom">
-        <button class="sidebar-action-btn" id="btnRunSidebar" title="Run (Alt+R)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-          Run
-        </button>
-      </div>
-    </aside>
+
 
     <!-- Editor + Terminal -->
     <div class="editor-area">
@@ -162,9 +141,9 @@
         <div class="tab active" id="mainTab">
           <span class="tab-lang-dot" id="tabDot" style="background:#3572A5"></span>
           <span class="tab-name" id="tabName">untitled.py</span>
-          <button class="tab-close" id="tabCloseBtn">✕</button>
+          <button class="tab-close" id="tabCloseBtn"><span class="material-icons">close</span></button>
         </div>
-        <button class="new-tab-btn" id="newTabBtn" title="New tab">+</button>
+        <button class="new-tab-btn" id="newTabBtn" title="New tab"><span class="material-icons">add</span></button>
       </div>
 
       <!-- Editor wrapper with line numbers -->
@@ -185,13 +164,19 @@
         <div class="terminal-header">
           <div class="terminal-tabs">
             <button class="term-tab active" id="termTabOutput">OUTPUT</button>
-            <button class="term-tab" id="termTabInput">INPUT</button>
           </div>
           <div class="terminal-actions">
             <span class="term-status" id="termStatus">Idle</span>
-            <button class="term-btn" id="termRun" title="Run (Alt+R)">▶ Run</button>
-            <button class="term-btn danger" id="termKill" title="Stop (Alt+K)">⏹ Stop</button>
-            <button class="term-btn" id="termClear" title="Clear (Alt+D)">🗑 Clear</button>
+            <button class="term-btn" id="termRun" title="Run (Alt+R)"><span
+                class="material-icons">play_arrow</span>Run</button>
+            <button class="term-btn" id="termInput" title="Send Input"><span
+                class="material-icons">keyboard</span>Input</button>
+            <button class="term-btn danger" id="termKill" title="Stop (Alt+K)"><span
+                class="material-icons">stop</span>Stop</button>
+            <button class="term-btn" id="termClear" title="Clear (Alt+D)"><span
+                class="material-icons">delete_sweep</span>Clear</button>
+            <button class="term-btn danger" id="termDelete" title="Delete Terminal"><span
+                class="material-icons">delete_forever</span>Del</button>
           </div>
         </div>
         <div class="terminal-body" id="terminalBody">
@@ -200,11 +185,26 @@
               code.</span>
           </div>
           <div id="terminalInputPanel" class="terminal-input-panel hidden">
-            <textarea id="terminalInput" class="terminal-input-box" placeholder="Send input to running process…"
-              rows="3"></textarea>
-            <button class="term-send-btn" id="termSendBtn">Send ↵</button>
+            <!-- This will now be handled by a popup modal -->
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Modal -->
+  <div class="modal-overlay hidden" id="inputModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Program Input</h3>
+        <button class="modal-close" id="closeModal"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <textarea id="modalInput" class="modal-textarea" placeholder="Type input here…"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn secondary" id="cancelInput">Cancel</button>
+        <button class="modal-btn primary" id="confirmInput">Send Input</button>
       </div>
     </div>
   </div>

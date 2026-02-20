@@ -158,7 +158,7 @@ const editor = document.getElementById('codeEditor');
 const highlight = document.getElementById('syntaxHighlight');
 const lineNumbers = document.getElementById('lineNumbers');
 const terminalOutput = document.getElementById('terminalOutput');
-const terminalInput = document.getElementById('terminalInput');
+
 const terminalPanel = document.getElementById('terminalPanel');
 const resizeHandle = document.getElementById('resizeHandle');
 const termStatus = document.getElementById('termStatus');
@@ -172,6 +172,8 @@ const statusCursor = document.getElementById('statusCursor');
 const statusLines = document.getElementById('statusLines');
 const statusZoom = document.getElementById('statusZoom');
 const toast = document.getElementById('toast');
+const inputModal = document.getElementById('inputModal');
+const modalInput = document.getElementById('modalInput');
 
 // ══════════════════════════════════════
 // Init
@@ -216,10 +218,7 @@ function setLanguage(lang, applyTemplate = true) {
         showToast('HTML opens in your default browser ▶');
     }
 
-    // Highlight lang buttons in sidebar & dropdown
-    document.querySelectorAll('.lang-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.lang === lang);
-    });
+
     document.querySelectorAll('.lang-item').forEach(b => {
         b.classList.toggle('active', b.dataset.lang === lang);
     });
@@ -504,10 +503,7 @@ function setupMenus() {
         });
     });
 
-    // Language buttons in sidebar
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', () => setLanguage(btn.dataset.lang, true));
-    });
+
 
     // Download links
     document.querySelectorAll('[data-url]').forEach(btn => {
@@ -521,16 +517,30 @@ function setupMenus() {
     document.getElementById('termRun').addEventListener('click', runCode);
     document.getElementById('termKill').addEventListener('click', killProcess);
     document.getElementById('termClear').addEventListener('click', clearTerminal);
-    document.getElementById('btnRunSidebar').addEventListener('click', runCode);
+    document.getElementById('termDelete').addEventListener('click', deleteTerminal);
 
-    // Terminal tabs
     document.getElementById('termTabOutput').addEventListener('click', () => switchTermTab('output'));
-    document.getElementById('termTabInput').addEventListener('click', () => switchTermTab('input'));
+    document.getElementById('termInput').addEventListener('click', openModal);
 
     // Terminal input send
-    document.getElementById('termSendBtn').addEventListener('click', sendTerminalInput);
-    terminalInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && e.ctrlKey) sendTerminalInput();
+    // Modal logic
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('cancelInput').addEventListener('click', closeModal);
+    document.getElementById('confirmInput').addEventListener('click', () => {
+        const text = modalInput.value;
+        if (text) {
+            window.electronAPI.sendTerminalInput(text + '\n');
+            modalInput.value = '';
+        }
+        closeModal();
+    });
+    modalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            const text = modalInput.value;
+            window.electronAPI.sendTerminalInput(text + '\n');
+            modalInput.value = '';
+            closeModal();
+        }
     });
 
     // Tab close
@@ -564,20 +574,23 @@ function closeAllMenus() {
 
 function switchTermTab(tab) {
     const outputPanel = document.getElementById('terminalOutput');
-    const inputPanel = document.getElementById('terminalInputPanel');
     const tabOut = document.getElementById('termTabOutput');
-    const tabIn = document.getElementById('termTabInput');
+
     if (tab === 'output') {
+        terminalPanel.classList.remove('terminal-hidden');
+        resizeHandle.style.display = '';
         outputPanel.classList.remove('hidden');
-        inputPanel.classList.add('hidden');
         tabOut.classList.add('active');
-        tabIn.classList.remove('active');
-    } else {
-        outputPanel.classList.add('hidden');
-        inputPanel.classList.remove('hidden');
-        tabIn.classList.add('active');
-        tabOut.classList.remove('active');
     }
+}
+
+function openModal() {
+    inputModal.classList.remove('hidden');
+    modalInput.focus();
+}
+
+function closeModal() {
+    inputModal.classList.add('hidden');
 }
 
 // ══════════════════════════════════════
@@ -646,17 +659,20 @@ function killProcess() {
     termStatus.className = 'term-status';
 }
 
+function deleteTerminal() {
+    closeAllMenus();
+    killProcess();
+    terminalPanel.classList.add('terminal-hidden');
+    resizeHandle.style.display = 'none';
+    showToast('Terminal hidden');
+}
+
 function clearTerminal() {
     closeAllMenus();
     terminalOutput.innerHTML = '';
 }
 
-function sendTerminalInput() {
-    const text = terminalInput.value;
-    if (!text.trim()) return;
-    window.electronAPI.sendTerminalInput(text + '\n');
-    terminalInput.value = '';
-}
+
 
 // ══════════════════════════════════════
 // Terminal IPC
@@ -690,6 +706,7 @@ function setupKeyboardShortcuts() {
         if (e.ctrlKey && e.key === 's' && !e.shiftKey) { e.preventDefault(); saveFile(); }
         if (e.ctrlKey && e.shiftKey && e.key === 'S') { e.preventDefault(); saveFileAs(); }
         if (e.altKey && e.key.toLowerCase() === 'r') { e.preventDefault(); runCode(); }
+        if (e.altKey && e.key.toLowerCase() === 'i') { e.preventDefault(); openModal(); }
         if (e.altKey && e.key.toLowerCase() === 'k') { e.preventDefault(); killProcess(); }
         if (e.altKey && e.key.toLowerCase() === 'd') { e.preventDefault(); clearTerminal(); }
         if (e.ctrlKey && e.key === '=') { e.preventDefault(); adjustFontSize(1); }

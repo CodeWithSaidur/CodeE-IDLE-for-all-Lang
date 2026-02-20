@@ -33,7 +33,7 @@
   --font-code: 'OCR A Extended', 'OCR A', 'Courier New', monospace;
 
   --titlebar-h: 42px;
-  --sidebar-w: 200px;
+
   --tabbar-h: 36px;
   --statusbar-h: 24px;
   --terminal-h: 240px;
@@ -295,93 +295,7 @@ pre {
   height: calc(100vh - var(--titlebar-h) - var(--statusbar-h));
 }
 
-/* ══════════════════ SIDEBAR ════════════════════════════════ */
-.sidebar {
-  width: var(--sidebar-w);
-  background: var(--bg-dark);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  overflow: hidden;
-}
 
-.sidebar-section {
-  padding: 12px 0;
-}
-
-.sidebar-title {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
-  padding: 0 12px;
-  margin-bottom: 6px;
-}
-
-.sidebar-empty {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  padding: 4px 12px;
-  font-style: italic;
-}
-
-.lang-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-
-.lang-btn {
-  padding: 7px 12px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  text-align: left;
-  border-radius: 0;
-  transition: background 0.1s, color 0.1s;
-}
-
-.lang-btn:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
-
-.lang-btn.active {
-  background: var(--accent-pale);
-  color: var(--text-accent);
-  border-left: 2px solid var(--accent);
-}
-
-.sidebar-bottom {
-  margin-top: auto;
-  padding: 12px;
-  border-top: 1px solid var(--border);
-}
-
-.sidebar-action-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 9px;
-  border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--accent), var(--blue));
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  transition: opacity 0.15s, transform 0.1s;
-  box-shadow: 0 0 16px var(--accent-glow);
-}
-
-.sidebar-action-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.sidebar-action-btn:active {
-  transform: translateY(0);
-}
 
 /* ══════════════════ EDITOR AREA ════════════════════════════ */
 .editor-area {
@@ -756,14 +670,167 @@ pre {
 
 /* Terminal input panel */
 .terminal-input-panel {
-  display: flex;
-  padding: 6px 10px;
-  gap: 6px;
-  border-top: 1px solid var(--border);
+  display: none;
 }
 
-.terminal-input-panel.hidden {
-  display: none;
+/* ── Material Icons ───────────────────────────────────── */
+.material-icons {
+  font-size: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.drop-icon.material-icons {
+  font-size: 18px;
+  width: 20px;
+}
+
+.term-btn .material-icons {
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.win-btn .material-icons {
+  font-size: 14px;
+}
+
+.tab-close .material-icons {
+  font-size: 14px;
+}
+
+.new-tab-btn .material-icons {
+  font-size: 18px;
+}
+
+/* ── Modal Popup ───────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay:not(.hidden) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  background: var(--bg-panel);
+  width: 90%;
+  max-width: 500px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-mid);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+  from {
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  padding: 12px 16px;
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-accent);
+}
+
+.modal-close {
+  color: var(--text-muted);
+  transition: color 0.1s;
+}
+
+.modal-close:hover {
+  color: var(--red);
+}
+
+.modal-body {
+  padding: 16px;
+  background: var(--bg-base);
+}
+
+.modal-textarea {
+  width: 100%;
+  height: 120px;
+  background: var(--bg-deepest);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  padding: 12px;
+  font-family: var(--font-code);
+  font-size: 13px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modal-textarea:focus {
+  border-color: var(--accent);
+}
+
+.modal-footer {
+  padding: 12px 16px;
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: filter 0.1s;
+}
+
+.modal-btn:hover {
+  filter: brightness(1.1);
+}
+
+.modal-btn.primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.modal-btn.secondary {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.hidden {
+  display: none !important;
 }
 
 .terminal-input-box {
