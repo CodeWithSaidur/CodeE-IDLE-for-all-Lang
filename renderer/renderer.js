@@ -58,7 +58,7 @@ using System.Collections.Generic;
 
 class Program {
     static void Main() {
-        Console.WriteLine("Hello, World! From C#");
+        Console.WriteLine("Hello from main.cs");
 
         var names = new List<string> { "Alice", "Bob", "Charlie" };
         foreach (var name in names) {
@@ -208,7 +208,18 @@ function init() {
     setupResizeHandle();
     setupTerminalIPC();
     setupKeyboardShortcuts();
+    setupWebviewHandlers();
     editor.focus();
+}
+
+function setupWebviewHandlers() {
+    sqlWebview.addEventListener('did-fail-load', (e) => {
+        if (e.errorCode === -3) return; // Ignore ERR_ABORTED
+        console.warn('Webview failed to load:', e.validatedURL, e.errorDescription);
+        if (currentLanguage === 'SQL') {
+            showToast(`Error: Could not connect to SQL Monitor. Is XAMPP/MySQL running?`, 5000);
+        }
+    });
 }
 
 // ══════════════════════════════════════
@@ -241,10 +252,20 @@ function setLanguage(lang, applyTemplate = true) {
     // Handle embedded SQL view
     sqlView.classList.toggle('hidden', !isSql);
     if (isSql) {
-        showToast('Loading SQL Monitor inside SCode...');
-        sqlWebview.src = 'http://localhost/phpmyadmin/index.php?route=/server/sql';
+        const targetUrl = 'http://localhost/phpmyadmin/index.php?route=/server/sql';
+        if (!sqlWebview.src.startsWith(targetUrl)) {
+            showToast('Loading SQL Monitor inside SCode...');
+            sqlWebview.src = targetUrl;
+        }
     } else {
-        sqlWebview.src = 'about:blank';
+        // Only reset to about:blank if it's not already empty/blank to avoid ERR_ABORTED
+        if (sqlWebview.src && sqlWebview.src !== 'about:blank' && sqlWebview.src !== '') {
+            try {
+                sqlWebview.src = 'about:blank';
+            } catch (e) {
+                console.error('Failed to reset webview:', e);
+            }
+        }
     }
 
     if (isHtml && applyTemplate) {
@@ -490,6 +511,52 @@ function setupEventListeners() {
             else adjustFontSize(-1);
         }
     }, { passive: false });
+
+    // Mouse wheel support for line numbers
+    lineNumbers.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        editor.scrollTop += e.deltaY;
+    }, { passive: false });
+
+    // Clicking line numbers to move cursor/select line
+    let isSelectingLines = false;
+    let startLineIdx = -1;
+
+    lineNumbers.addEventListener('mousedown', (e) => {
+        isSelectingLines = true;
+        const rect = lineNumbers.getBoundingClientRect();
+        const y = e.clientY - rect.top + lineNumbers.scrollTop;
+        const lineH = parseFloat(getComputedStyle(editor).lineHeight);
+        startLineIdx = Math.floor((y - 16) / lineH);
+        selectLines(startLineIdx, startLineIdx);
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isSelectingLines) return;
+        const rect = lineNumbers.getBoundingClientRect();
+        const y = e.clientY - rect.top + lineNumbers.scrollTop;
+        const lineH = parseFloat(getComputedStyle(editor).lineHeight);
+        const currentLineIdx = Math.floor((y - 16) / lineH);
+        selectLines(startLineIdx, currentLineIdx);
+    });
+
+    window.addEventListener('mouseup', () => { isSelectingLines = false; });
+
+    function selectLines(from, to) {
+        const lines = editor.value.split('\n');
+        const start = Math.max(0, Math.min(from, to));
+        const end = Math.min(lines.length - 1, Math.max(from, to));
+
+        let startPos = 0;
+        for (let i = 0; i < start; i++) startPos += lines[i].length + 1;
+
+        let endPos = startPos;
+        for (let i = start; i <= end; i++) endPos += lines[i].length + (i === lines.length - 1 ? 0 : 1);
+
+        editor.focus();
+        editor.setSelectionRange(startPos, endPos);
+        updateCursorPos();
+    }
 }
 
 function updateTabDirty() {
@@ -593,15 +660,6 @@ function setupMenus() {
     // Tab close
     document.getElementById('tabCloseBtn').addEventListener('click', () => {
         editor.value = '';
-        currentFilePath = null;
-        isDirty = false;
-        updateAll();
-        updateTabDirty();
-    });
-
-    // New tab (reset)
-    document.getElementById('newTabBtn').addEventListener('click', () => {
-        editor.value = TEMPLATES[currentLanguage] || '';
         currentFilePath = null;
         isDirty = false;
         updateAll();
@@ -838,11 +896,11 @@ function setupResizeHandle() {
 // Toast
 // ══════════════════════════════════════
 let toastTimer;
-function showToast(msg) {
+function showToast(msg, duration = 2500) {
     toast.textContent = msg;
     toast.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
 }
 
 

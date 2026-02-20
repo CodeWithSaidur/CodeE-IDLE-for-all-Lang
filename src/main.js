@@ -189,15 +189,9 @@ ipcMain.handle('run-code', async (event, { language, code }) => {
             else sendOutput(`\n✗ Compilation failed.\n`, true);
         });
     } else if (language === 'C#') {
-        const src = path.join(tmpDir, 'Program.cs');
-        const out = path.join(tmpDir, isWin ? 'Program.exe' : 'Program');
+        const src = path.join(tmpDir, 'main.cs');
         fs.writeFileSync(src, code);
-        const compile = spawn('csc', [src], { shell: true, cwd: tmpDir });
-        compile.stderr.on('data', (d) => sendOutput(d.toString(), true));
-        compile.on('close', (c) => {
-            if (c === 0) runProcess(isWin ? out : 'mono', isWin ? [] : [out]);
-            else sendOutput(`\n✗ Compilation failed.\n`, true);
-        });
+        runProcess('dotnet', ['run', src]);
     } else if (language === 'Java') {
         const src = path.join(tmpDir, 'Main.java');
         fs.writeFileSync(src, code);
