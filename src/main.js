@@ -6,7 +6,7 @@ const os = require('os');
 
 let mainWindow;
 let runningProcess = null;
-
+ 
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1500,
