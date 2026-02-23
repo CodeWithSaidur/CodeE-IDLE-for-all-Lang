@@ -1,162 +1,43 @@
 /* ════════════════════════════════════════════════════════════
-   SCode Renderer – renderer.js
+   SCode Renderer – renderer.js (Monaco Edition)
    ════════════════════════════════════════════════════════════ */
 
 'use strict';
 
 // ── State ────────────────────────────────────────────────────
+let monacoEditor = null;
 let currentLanguage = 'Python';
 let currentFilePath = null;
 let isDirty = false;
 let fontSize = 14;
-let wordWrap = false;
+let KEYWORDS_DATA = {};
 
 // ── Templates ────────────────────────────────────────────────
 const TEMPLATES = {
-    Python: `# Python - Hello World
-print("Hello, World! From Python")
-
-# Example: simple functions
-def greet(name):
-    return f"Hello, {name}!"
-
-names = ["Alice", "Bob", "Charlie"]
-for name in names:
-    print(greet(name))
-`,
-    C: `#include <stdio.h>
-
-int main() {
-    printf("Hello, World! From C\\n");
-
-    // Loop example
-    for (int i = 1; i <= 5; i++) {
-        printf("Count: %d\\n", i);
-    }
-
-    return 0;
-}
-`,
-    'C++': `#include <iostream>
-#include <vector>
-#include <string>
-
-int main() {
-    std::cout << "Hello, World! From C++" << std::endl;
-
-    std::vector<std::string> names = {"Alice", "Bob", "Charlie"};
-    for (const auto& name : names) {
-        std::cout << "Hello, " << name << "!" << std::endl;
-    }
-
-    return 0;
-}
-`,
-    'C#': `using System;
-using System.Collections.Generic;
-
-class Program {
-    static void Main() {
-        Console.WriteLine("Hello from main.cs");
-
-        var names = new List<string> { "Alice", "Bob", "Charlie" };
-        foreach (var name in names) {
-            Console.WriteLine($"Hello, {name}!");
-        }
-    }
-}
-`,
-    Java: `import java.util.Arrays;
-import java.util.List;
-
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello, World! From Java");
-
-        List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
-        for (String name : names) {
-            System.out.println("Hello, " + name + "!");
-        }
-    }
-}
-`,
-    JavaScript: `// JavaScript - Hello World
-console.log("Hello, World! From JavaScript");
-
-// Example: arrow functions & array methods
-const names = ["Alice", "Bob", "Charlie"];
-names.forEach(name => {
-    console.log(\`Hello, \${name}!\`);
-});
-
-// Async example
-async function fetchData() {
-    return "async data";
-}
-fetchData().then(data => console.log(data));
-`,
-    PHP: `<?php
-echo "Hello, World! From PHP\\n";
-
-// Example: arrays and loops
-$names = ["Alice", "Bob", "Charlie"];
-foreach ($names as $name) {
-    echo "Hello, $name!\\n";
-}
-
-// Functions
-function greet($name) {
-    return "Greetings, $name!";
-}
-echo greet("World") . "\\n";
-?>
-`,
-    HTML: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Hello, World! From HTML</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background: #0f0f1a;
-            color: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        h1 { color: #a78bfa; }
-    </style>
-</head>
-<body>
-    <div>
-        <h1>Hello, World! From HTML</h1>
-        <p>This is a sample HTML page from SCode.</p>
-    </div>
-</body>
-</html>
-`,
-    SQL: `-- SQL Example - Hello World
-SELECT 'Hello World' AS Greeting;
-
--- Example: create table
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE
-);
-
--- Example: insert data
-INSERT INTO users (name, email) VALUES ('Saidur', 'saidur@example.com');
-
--- Example: select data
-SELECT * FROM users ORDER BY name ASC;
-`,
+    Python: `# Python - Hello World\nprint("Hello, World! From Python")\n\ndef greet(name):\n    return f"Hello, {name}!"\n\nnames = ["Alice", "Bob", "Charlie"]\nfor name in names:\n    print(greet(name))\n`,
+    C: `#include <stdio.h>\n\nint main() {\n    printf("Hello, World! From C\\n");\n    for (int i = 1; i <= 5; i++) {\n        printf("Count: %d\\n", i);\n    }\n    return 0;\n}\n`,
+    'C++': `#include <iostream>\n#include <vector>\n#include <string>\n\nint main() {\n    std::cout << "Hello, World! From C++" << std::endl;\n    std::vector<std::string> names = {"Alice", "Bob", "Charlie"};\n    for (const auto& name : names) {\n        std::cout << "Hello, " << name << "!" << std::endl;\n    }\n    return 0;\n}\n`,
+    'C#': `using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello from main.cs");\n        var names = new List<string> { "Alice", "Bob", "Charlie" };\n        foreach (var name in names) {\n            Console.WriteLine($"Hello, {name}!");\n        }\n    }\n}\n`,
+    Java: `import java.util.Arrays;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World! From Java");\n        List<String> names = Arrays.asList("Alice", "Bob", "Charlie");\n        for (String name : names) {\n            System.out.println("Hello, " + name + "!");\n        }\n    }\n}\n`,
+    JavaScript: `// JavaScript - Hello World\nconsole.log("Hello, World! From JavaScript");\n\nconst names = ["Alice", "Bob", "Charlie"];\nnames.forEach(name => {\n    console.log(\`Hello, \${name}!\`);\n});\n`,
+    PHP: `<?php\necho "Hello, World! From PHP\\n";\n$names = ["Alice", "Bob", "Charlie"];\nforeach ($names as $name) {\n    echo "Hello, $name!\\n";\n}\n?>\n`,
+    HTML: `<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8"/>\n    <title>Hello SCode</title>\n    <style>body { background: #0f0f1a; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; }</style>\n</head>\n<body>\n    <h1>Hello from SCode!</h1>\n</body>\n</html>\n`,
+    SQL: `-- SQL Example\nSELECT 'Hello World' AS Greeting;\n\nCREATE TABLE IF NOT EXISTS users (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    name VARCHAR(100)\n);\n`,
 };
 
-// ── Language config ──────────────────────────────────────────
+// ── Language mapping for Monaco ──────────────────────────────
+const MONACO_LANGS = {
+    Python: 'python',
+    C: 'c',
+    'C++': 'cpp',
+    'C#': 'csharp',
+    Java: 'java',
+    JavaScript: 'javascript',
+    PHP: 'php',
+    HTML: 'html',
+    SQL: 'sql'
+};
+
 const LANG_CONFIG = {
     Python: { ext: 'py', dot: '#3572A5', label: 'Python' },
     C: { ext: 'c', dot: '#555555', label: 'C' },
@@ -170,11 +51,7 @@ const LANG_CONFIG = {
 };
 
 // ── DOM refs ─────────────────────────────────────────────────
-const editor = document.getElementById('codeEditor');
-const highlight = document.getElementById('syntaxHighlight');
-const lineNumbers = document.getElementById('lineNumbers');
 const terminalOutput = document.getElementById('terminalOutput');
-
 const terminalPanel = document.getElementById('terminalPanel');
 const resizeHandle = document.getElementById('resizeHandle');
 const termStatus = document.getElementById('termStatus');
@@ -190,7 +67,6 @@ const statusZoom = document.getElementById('statusZoom');
 const toast = document.getElementById('toast');
 const inputModal = document.getElementById('inputModal');
 const modalInput = document.getElementById('modalInput');
-
 const sqlView = document.getElementById('sqlView');
 const sqlWebview = document.getElementById('sqlWebview');
 const sqlRefresh = document.getElementById('sqlRefresh');
@@ -199,21 +75,191 @@ const sqlRefresh = document.getElementById('sqlRefresh');
 // Init
 // ══════════════════════════════════════
 function init() {
-    setLanguage('Python', false);
-    editor.value = TEMPLATES['Python'];
-    updateAll();
-    setupEventListeners();
-    setupMenus();
-    setupResizeHandle();
-    setupTerminalIPC();
-    setupKeyboardShortcuts();
-    setupWebviewHandlers();
-    editor.focus();
+    // Monaco Loader configuration
+    require.config({ paths: { 'vs': '../node_modules/monaco-editor/min/vs' } });
+
+    require(['vs/editor/editor.main'], function () {
+        // Define Custom Theme
+        monaco.editor.defineTheme('scode-dark', {
+            base: 'vs-dark',
+            inherit: true,
+            rules: [
+                { token: 'comment', foreground: '6272a4' },
+                { token: 'keyword', foreground: 'bd93f9' },
+                { token: 'string', foreground: 'f1fa8c' },
+                { token: 'type', foreground: '8be9fd' },
+                { token: 'function', foreground: '50fa7b' }
+            ],
+            colors: {
+                'editor.background': '#111128',
+                'editor.foreground': '#e2e8f0',
+                'editorCursor.foreground': '#a78bfa',
+                'editor.lineHighlightBackground': '#1c1c3a',
+                'editorLineNumber.foreground': '#4b5563',
+                'editorLineNumber.activeForeground': '#a78bfa',
+                'editor.selectionBackground': '#7c3aed44',
+                'editorIndentGuide.background': '#1c1c3a'
+            }
+        });
+
+        monacoEditor = monaco.editor.create(document.getElementById('monacoContainer'), {
+            value: TEMPLATES['Python'],
+            language: 'python',
+            theme: 'scode-dark',
+            fontSize: fontSize,
+            fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+            automaticLayout: true,
+            minimap: { enabled: false },
+            cursorBlink: 'smooth',
+            cursorSmoothCaretAnimation: 'on',
+            smoothScrolling: true,
+            padding: { top: 16, bottom: 16 },
+            roundedSelection: true,
+            scrollBeyondLastLine: false,
+            bracketPairColorization: { enabled: true }
+        });
+
+        // Event listeners for editor
+        monacoEditor.onDidChangeModelContent(() => {
+            if (!isDirty) {
+                isDirty = true;
+                updateTabDirty();
+            }
+            updateStatusBar();
+        });
+
+        monacoEditor.onDidChangeCursorPosition(() => {
+            updateStatusBar();
+        });
+
+        setupMenus();
+        setupResizeHandle();
+        setupTerminalIPC();
+        setupKeyboardShortcuts();
+        setupMouseWheelZoom();
+        setupWebviewHandlers();
+        setLanguage('Python', false);
+        initKeywords();
+        updateStatusBar();
+
+        // Add Monaco-specific commands for shortcuts
+        monacoEditor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.KeyR, () => runCode());
+        monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => saveFile());
+        monacoEditor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyS, () => saveFileAs());
+        monacoEditor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.KeyI, () => openModal());
+        monacoEditor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.KeyK, () => killProcess());
+        monacoEditor.addCommand(monaco.KeyMod.Alt | monaco.KeyCode.KeyD, () => clearTerminal());
+    });
+}
+
+/**
+ * ── Keywords Algorithm ─────────────────────────────────────────
+ * 1. Load from keywords dir
+ * 2. Separate by language
+ * 3. Supplement Monaco completions
+ */
+async function initKeywords() {
+    const langs = ['Python', 'C', 'Cpp', 'CSharp', 'Java', 'JavaScript', 'PHP', 'HTML', 'SQL'];
+    const promises = langs.map(async (lang) => {
+        try {
+            const response = await fetch(`./keywords/${lang}/keywords.json`);
+            if (response.ok) {
+                KEYWORDS_DATA[lang] = await response.json();
+                registerMonacoCompletions(lang);
+            }
+        } catch (e) {
+            console.warn(`Failed to load keywords for ${lang}:`, e);
+        }
+    });
+    await Promise.all(promises);
+}
+
+function registerMonacoCompletions(lang) {
+    const monacoLang = MONACO_LANGS[lang];
+    if (!monacoLang) return;
+
+    monaco.languages.registerCompletionItemProvider(monacoLang, {
+        provideCompletionItems: (model, position) => {
+            const data = KEYWORDS_DATA[lang];
+            const suggestions = [];
+
+            if (!data) return { suggestions: [] };
+
+            // Add standard keywords
+            if (data.keywords) {
+                data.keywords.forEach(kw => {
+                    suggestions.push({
+                        label: kw,
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: kw,
+                        detail: `${lang} Keyword`
+                    });
+                });
+            }
+
+            // Add builtins/functions/tags
+            if (data.builtins) {
+                data.builtins.forEach(f => {
+                    suggestions.push({
+                        label: f,
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText: f,
+                        detail: `${lang} Built-in`
+                    });
+                });
+            }
+
+            if (data.types) {
+                data.types.forEach(t => {
+                    suggestions.push({
+                        label: t,
+                        kind: monaco.languages.CompletionItemKind.Class,
+                        insertText: t,
+                        detail: `${lang} Type`
+                    });
+                });
+            }
+
+            if (data.tags) {
+                data.tags.forEach(tag => {
+                    suggestions.push({
+                        label: tag,
+                        kind: monaco.languages.CompletionItemKind.Property,
+                        insertText: tag,
+                        detail: `HTML Tag`
+                    });
+                });
+            }
+
+            if (data.attributes) {
+                data.attributes.forEach(attr => {
+                    suggestions.push({
+                        label: attr,
+                        kind: monaco.languages.CompletionItemKind.Field,
+                        insertText: attr,
+                        detail: `HTML Attribute`
+                    });
+                });
+            }
+
+            return { suggestions: suggestions };
+        }
+    });
+}
+
+function updateStatusBar() {
+    if (!monacoEditor) return;
+    const model = monacoEditor.getModel();
+    const position = monacoEditor.getPosition();
+    if (model && position) {
+        statusCursor.textContent = `Ln ${position.lineNumber}, Col ${position.column}`;
+        statusLines.textContent = `${model.getLineCount()} Lines`;
+    }
 }
 
 function setupWebviewHandlers() {
     sqlWebview.addEventListener('did-fail-load', (e) => {
-        if (e.errorCode === -3) return; // Ignore ERR_ABORTED
+        if (e.errorCode === -3) return;
         console.warn('Webview failed to load:', e.validatedURL, e.errorDescription);
         if (currentLanguage === 'SQL') {
             showToast(`Error: Could not connect to SQL Monitor. Is XAMPP/MySQL running?`, 5000);
@@ -233,284 +279,63 @@ function setLanguage(lang, applyTemplate = true) {
     tabDot.style.background = cfg.dot;
     statusDot.style.background = cfg.dot;
     statusLang.innerHTML = `<span class="status-dot" style="background:${cfg.dot}"></span>${cfg.label}`;
-    tabName.textContent = currentFilePath
+
+    const fileName = currentFilePath
         ? currentFilePath.split(/[\\/]/).pop()
         : `untitled.${cfg.ext}`;
-    fileTitle.textContent = currentFilePath
-        ? currentFilePath.split(/[\\/]/).pop()
-        : `untitled.${cfg.ext}`;
+
+    tabName.textContent = fileName;
+    fileTitle.textContent = fileName;
     document.title = `SCode – ${cfg.label}`;
 
-    // Hide terminal for HTML/SQL (SQL is embedded), show for all others
+    if (monacoEditor) {
+        monaco.editor.setModelLanguage(monacoEditor.getModel(), MONACO_LANGS[lang] || 'plaintext');
+        if (applyTemplate) {
+            monacoEditor.setValue(TEMPLATES[lang] || '');
+            isDirty = false;
+            updateTabDirty();
+        }
+    }
+
     const isHtml = lang === 'HTML';
     const isSql = lang === 'SQL';
 
     terminalPanel.classList.toggle('terminal-hidden', isHtml || isSql);
     resizeHandle.style.display = (isHtml || isSql) ? 'none' : '';
-
-    // Handle embedded SQL view
     sqlView.classList.toggle('hidden', !isSql);
+
     if (isSql) {
         const targetUrl = 'http://localhost/phpmyadmin/index.php?route=/server/sql';
         if (!sqlWebview.src.startsWith(targetUrl)) {
-            showToast('Loading SQL Monitor inside SCode...');
+            showToast('Loading SQL Monitor...');
             sqlWebview.src = targetUrl;
         }
-    } else {
-        // Only reset to about:blank if it's not already empty/blank to avoid ERR_ABORTED
-        if (sqlWebview.src && sqlWebview.src !== 'about:blank' && sqlWebview.src !== '') {
-            try {
-                sqlWebview.src = 'about:blank';
-            } catch (e) {
-                console.error('Failed to reset webview:', e);
-            }
-        }
-    }
-
-    if (isHtml && applyTemplate) {
-        showToast(`${lang} opens in your default browser ▶`);
     }
 
     document.querySelectorAll('.lang-item').forEach(b => {
         b.classList.toggle('active', b.dataset.lang === lang);
     });
-
-    if (applyTemplate) {
-        editor.value = TEMPLATES[lang] || '';
-        isDirty = false;
-        updateAll();
-    }
-    updateSyntax();
-}
-
-// ══════════════════════════════════════
-// Update helpers
-// ══════════════════════════════════════
-function updateAll() {
-    updateSyntax();
-    updateLineNumbers();
-    updateCursorPos();
-}
-
-function updateLineNumbers() {
-    const lines = editor.value.split('\n');
-    lineNumbers.textContent = lines.map((_, i) => i + 1).join('\n');
-    statusLines.textContent = `${lines.length} Lines`;
-}
-
-function updateCursorPos() {
-    const val = editor.value;
-    const pos = editor.selectionStart;
-    const linesBeforeCursor = val.substring(0, pos).split('\n');
-    const line = linesBeforeCursor.length;
-    const col = linesBeforeCursor[linesBeforeCursor.length - 1].length + 1;
-    statusCursor.textContent = `Ln ${line}, Col ${col}`;
-}
-
-// ══════════════════════════════════════
-// Syntax Highlighting (hand-rolled tokenizer)
-// ══════════════════════════════════════
-const LANG_RULES = {
-    Python: [
-        { cls: 'tok-comment', re: /(#.*)$/m },
-        { cls: 'tok-string', re: /(\"{3}[\s\S]*?\"{3}|'{3}[\s\S]*?'{3}|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
-        { cls: 'tok-decorator', re: /(@\w+)/ },
-        { cls: 'tok-keyword', re: /\b(False|None|True|and|as|assert|async|await|break|class|continue|def|del|elif|else|except|finally|for|from|global|if|import|in|is|lambda|nonlocal|not|or|pass|raise|return|try|while|with|yield)\b/ },
-        { cls: 'tok-builtin', re: /\b(print|len|range|type|int|str|float|list|dict|set|tuple|bool|input|open|map|filter|zip|enumerate|sorted|reversed|abs|max|min|sum|any|all|hasattr|getattr|setattr|isinstance|issubclass|super|object|staticmethod|classmethod|property)\b/ },
-        { cls: 'tok-number', re: /\b(0x[\da-fA-F]+|\d+\.?\d*([eE][+-]?\d+)?j?)\b/ },
-        { cls: 'tok-function', re: /\b([a-zA-Z_]\w*)\s*(?=\()/ },
-        { cls: 'tok-class', re: /\bclass\s+([A-Z]\w*)/ },
-    ],
-    JavaScript: [
-        { cls: 'tok-comment', re: /(\/\/.*$|\/\*[\s\S]*?\*\/)/m },
-        { cls: 'tok-string', re: /(`(?:\\.|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
-        { cls: 'tok-keyword', re: /\b(break|case|catch|class|const|continue|debugger|default|delete|do|else|export|extends|finally|for|function|if|import|in|instanceof|let|new|null|of|return|static|super|switch|this|throw|try|typeof|undefined|var|void|while|with|yield|async|await)\b/ },
-        { cls: 'tok-builtin', re: /\b(console|document|window|Math|JSON|Array|Object|String|Number|Boolean|Promise|Map|Set|Symbol|Error|Date|RegExp|parseInt|parseFloat|isNaN|isFinite|setTimeout|setInterval|clearTimeout|clearInterval|fetch)\b/ },
-        { cls: 'tok-number', re: /\b(0x[\da-fA-F]+|\d+\.?\d*([eE][+-]?\d+)?)\b/ },
-        { cls: 'tok-function', re: /\b([a-zA-Z_$][\w$]*)\s*(?=\()/ },
-        { cls: 'tok-class', re: /\bclass\s+([A-Z]\w*)/ },
-        { cls: 'tok-decorator', re: /(@\w+)/ },
-    ],
-    C: [
-        { cls: 'tok-preprocessor', re: /(#\s*(?:include|define|ifdef|ifndef|endif|pragma|undef|if|else|elif)\b.*)$/m },
-        { cls: 'tok-comment', re: /(\/\/.*$|\/\*[\s\S]*?\*\/)/m },
-        { cls: 'tok-string', re: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
-        { cls: 'tok-keyword', re: /\b(auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|inline|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while)\b/ },
-        { cls: 'tok-number', re: /\b(0x[\da-fA-F]+[uUlL]*|\d+\.?\d*([eE][+-]?\d+)?[fFlL]?)\b/ },
-        { cls: 'tok-function', re: /\b([a-zA-Z_]\w*)\s*(?=\()/ },
-        { cls: 'tok-type', re: /\b(FILE|size_t|ptrdiff_t|intptr_t|uint8_t|uint16_t|uint32_t|uint64_t|int8_t|int16_t|int32_t|int64_t|bool)\b/ },
-    ],
-    'C++': [
-        { cls: 'tok-preprocessor', re: /(#\s*(?:include|define|ifdef|ifndef|endif|pragma|undef|if|else|elif)\b.*)$/m },
-        { cls: 'tok-comment', re: /(\/\/.*$|\/\*[\s\S]*?\*\/)/m },
-        { cls: 'tok-string', re: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|R"\([\s\S]*?\)")/ },
-        { cls: 'tok-keyword', re: /\b(alignas|alignof|and|and_eq|asm|auto|bitand|bitor|bool|break|case|catch|char|char16_t|char32_t|class|compl|const|constexpr|const_cast|continue|decltype|default|delete|do|double|dynamic_cast|else|enum|explicit|export|extern|false|float|for|friend|goto|if|inline|int|long|mutable|namespace|new|noexcept|not|not_eq|nullptr|operator|or|or_eq|private|protected|public|register|reinterpret_cast|return|short|signed|sizeof|static|static_assert|static_cast|struct|switch|template|this|thread_local|throw|true|try|typedef|typeid|typename|union|unsigned|using|virtual|void|volatile|wchar_t|while|xor|xor_eq|override|final)\b/ },
-        { cls: 'tok-number', re: /\b(0x[\da-fA-F]+[uUlL]*|\d+\.?\d*([eE][+-]?\d+)?[fFlL]?)\b/ },
-        { cls: 'tok-function', re: /\b([a-zA-Z_]\w*)\s*(?=\()/ },
-        { cls: 'tok-class', re: /\bclass\s+([A-Z]\w*)/ },
-    ],
-    'C#': [
-        { cls: 'tok-comment', re: /(\/\/.*$|\/\*[\s\S]*?\*\/)|(\/\/\/.*$)/m },
-        { cls: 'tok-string', re: /(@"(?:[^"]|"")*"|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
-        { cls: 'tok-decorator', re: /(\[\w+(?:\(.*?\))?\])/ },
-        { cls: 'tok-keyword', re: /\b(abstract|as|base|bool|break|byte|case|catch|char|checked|class|const|continue|decimal|default|delegate|do|double|else|enum|event|explicit|extern|false|finally|fixed|float|for|foreach|goto|if|implicit|in|int|interface|internal|is|lock|long|namespace|new|null|object|operator|out|override|params|private|protected|public|readonly|ref|return|sbyte|sealed|short|sizeof|stackalloc|static|string|struct|switch|this|throw|true|try|typeof|uint|ulong|unchecked|unsafe|ushort|using|var|virtual|void|volatile|while|async|await|yield|nameof|dynamic|when)\b/ },
-        { cls: 'tok-number', re: /\b(0x[\da-fA-F]+[uUlL]*|\d+\.?\d*([eE][+-]?\d+)?[fFdDmM]?)\b/ },
-        { cls: 'tok-function', re: /\b([a-zA-Z_]\w*)\s*(?=\()/ },
-        { cls: 'tok-class', re: /\b(class|interface|struct|enum)\s+([A-Z]\w*)/ },
-    ],
-    Java: [
-        { cls: 'tok-comment', re: /(\/\/.*$|\/\*[\s\S]*?\*\/)/m },
-        { cls: 'tok-string', re: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
-        { cls: 'tok-keyword', re: /\b(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|do|double|else|enum|extends|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|false|try|void|volatile|while|var|record|sealed|permits|yield)\b/ },
-        { cls: 'tok-number', re: /\b(0x[\da-fA-F]+[lL]?|\d+\.?\d*([eE][+-]?\d+)?[fFdDlL]?)\b/ },
-        { cls: 'tok-function', re: /\b([a-zA-Z_]\w*)\s*(?=\()/ },
-        { cls: 'tok-class', re: /\b(class|interface|enum|record)\s+([A-Z]\w*)/ },
-    ],
-    PHP: [
-        { cls: 'tok-comment', re: /(\/\/.*$|#.*$|\/\*[\s\S]*?\*\/)/m },
-        { cls: 'tok-string', re: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
-        { cls: 'tok-keyword', re: /\b(abstract|and|array|as|break|callable|case|catch|class|clone|const|continue|declare|default|die|do|echo|else|elseif|empty|enddeclare|endfor|endforeach|endif|endswitch|endwhile|eval|exit|extends|final|finally|fn|for|foreach|function|global|goto|if|implements|include|include_once|instanceof|insteadof|interface|isset|list|match|namespace|new|null|or|print|private|protected|public|require|require_once|return|static|switch|throw|trait|true|false|try|unset|use|var|while|xor|yield)\b/ },
-        { cls: 'tok-variable', re: /(\$[a-zA-Z_]\w*)/ },
-        { cls: 'tok-number', re: /\b(0x[\da-fA-F]+|\d+\.?\d*([eE][+-]?\d+)?)\b/ },
-        { cls: 'tok-function', re: /\b([a-zA-Z_]\w*)\s*(?=\()/ },
-    ],
-    HTML: [
-        { cls: 'tok-comment', re: /(<!--[\s\S]*?-->)/ },
-        { cls: 'tok-string', re: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
-        { cls: 'tok-tag', re: /(<\/?\s*[\w-]+)/ },
-        { cls: 'tok-attr-name', re: /\b([\w-]+)\s*=/ },
-        { cls: 'tok-operator', re: /(<\/?|\/?>)/ },
-    ],
-    SQL: [
-        { cls: 'tok-comment', re: /(--.*$|\/\*[\s\S]*?\*\/)/m },
-        { cls: 'tok-string', re: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/ },
-        { cls: 'tok-keyword', re: /\b(ADD|ALL|ALTER|AND|ANY|AS|ASC|BACKUP|BETWEEN|CASE|CHECK|COLUMN|CONSTRAINT|CREATE|DATABASE|DEFAULT|DELETE|DESC|DISTINCT|DROP|EXEC|EXISTS|FOREIGN|FROM|FULL|GROUP|HAVING|IN|INDEX|INNER|INSERT|IS|JOIN|LEFT|LIKE|LIMIT|NOT|NULL|OR|ORDER|OUTER|PRIMARY|PROCEDURE|REPLACE|RIGHT|ROW|SELECT|SET|TABLE|TOP|TRUNCATE|UNION|UNIQUE|UPDATE|VALUES|VIEW|WHERE|BY|HAVING|ORDER|GROUP|INTO|SET|ADD|CONSTRAINT|KEY|IF|EXISTS|DATABASE|SCHEMA|TABLE|PROCEDURE|FUNCTION|TRIGGER|VIEW|INDEX|USER|GRANT|REVOKE|COMMIT|ROLLBACK|SAVEPOINT)\b/i },
-        { cls: 'tok-builtin', re: /\b(INT|VARCHAR|TEXT|DATE|DATETIME|TIMESTAMP|BOOLEAN|FLOAT|DOUBLE|DECIMAL|CHAR|BLOB|LONGTEXT|TINYINT|SMALLINT|BIGINT|JSON)\b/i },
-        { cls: 'tok-number', re: /\b(\d+\.?\d*)\b/ },
-        { cls: 'tok-operator', re: /(=|!=|<>|<|>|<=|>=|\+|\-|\*|\/|%)/ },
-    ],
-};
-
-function escapeHtml(str) {
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-}
-
-function updateSyntax() {
-    const code = editor.value;
-    const rules = LANG_RULES[currentLanguage] || [];
-    const escaped = escapeHtml(code);
-
-    // Build HTML by applying rules sequentially via a segment approach
-    // We tokenize by splitting the string based on regex matches
-    let html = tokenize(code, rules);
-    html = html.replace(/\n/g, '\n'); // ensure newlines preserved
-    highlight.innerHTML = html + '\n'; // trailing newline for caret position
-
-    // Sync scroll
-    syncScroll();
-}
-
-function tokenize(code, rules) {
-    if (!rules.length) return escapeHtml(code);
-
-    let result = '';
-    let remaining = code;
-
-    while (remaining.length > 0) {
-        let earliest = null;
-        let earliestIdx = Infinity;
-        let earliestRule = null;
-        let earliestMatch = null;
-
-        for (const rule of rules) {
-            const match = rule.re.exec(remaining);
-            if (match && match.index < earliestIdx) {
-                earliestIdx = match.index;
-                earliest = match[0];
-                earliestRule = rule;
-                earliestMatch = match;
-            }
-        }
-
-        if (!earliest) {
-            result += escapeHtml(remaining);
-            break;
-        }
-
-        // Text before the match
-        if (earliestIdx > 0) {
-            result += escapeHtml(remaining.substring(0, earliestIdx));
-        }
-
-        // The match
-        result += `<span class="${earliestRule.cls}">${escapeHtml(earliest)}</span>`;
-        remaining = remaining.substring(earliestIdx + earliest.length);
-    }
-
-    return result;
-}
-
-function syncScroll() {
-    highlight.scrollTop = editor.scrollTop;
-    highlight.scrollLeft = editor.scrollLeft;
-    lineNumbers.scrollTop = editor.scrollTop;
 }
 
 // ══════════════════════════════════════
 // Event listeners
 // ══════════════════════════════════════
 function setupEventListeners() {
-    // Editor input
-    editor.addEventListener('input', () => {
-        isDirty = true;
-        updateAll();
-        updateTabDirty();
-    });
-
-    editor.addEventListener('keydown', (e) => {
-        // Tab → insert 4 spaces
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const start = editor.selectionStart;
-            const end = editor.selectionEnd;
-            editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
-            editor.selectionStart = editor.selectionEnd = start + 4;
-            updateAll();
-        }
-        // Auto-close brackets
-        const pairs = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'" };
-        if (pairs[e.key]) {
-            e.preventDefault();
-            const s = editor.selectionStart;
-            const selected = editor.value.substring(s, editor.selectionEnd);
-            const ins = e.key + selected + pairs[e.key];
-            document.execCommand('insertText', false, ins);
-            editor.selectionStart = editor.selectionEnd = s + 1;
-            updateAll();
-        }
-    });
-
-    editor.addEventListener('scroll', syncScroll);
-    editor.addEventListener('click', updateCursorPos);
-    editor.addEventListener('keyup', updateCursorPos);
-
+    // This is mostly replaced by monacoEditor event listeners in init()
 }
 
 function updateTabDirty() {
     const dot = isDirty ? '● ' : '';
-    tabName.textContent = dot + (currentFilePath
+    const name = currentFilePath
         ? currentFilePath.split(/[\\/]/).pop()
-        : `untitled.${LANG_CONFIG[currentLanguage].ext}`);
+        : `untitled.${LANG_CONFIG[currentLanguage].ext}`;
+    tabName.textContent = dot + name;
 }
 
 // ══════════════════════════════════════
 // Menus
 // ══════════════════════════════════════
 function setupMenus() {
-    // Toggle dropdown on click
     const menuItems = document.querySelectorAll('.menu-item');
     menuItems.forEach(item => {
         const btn = item.querySelector('.menu-btn');
@@ -526,22 +351,17 @@ function setupMenus() {
         });
     });
 
-    // Close menus on outside click
     document.addEventListener('click', closeAllMenus);
 
-    // File menu
     document.getElementById('btnOpen').addEventListener('click', openFile);
     document.getElementById('btnSave').addEventListener('click', saveFile);
     document.getElementById('btnSaveAs').addEventListener('click', saveFileAs);
     document.getElementById('btnExit').addEventListener('click', () => window.electronAPI.windowClose());
-
-    // Tools menu
     document.getElementById('btnRun').addEventListener('click', runCode);
     document.getElementById('btnKill').addEventListener('click', killProcess);
     document.getElementById('btnClear').addEventListener('click', clearTerminal);
     document.getElementById('btnWordWrap').addEventListener('click', toggleWordWrap);
 
-    // Language menu (in menu bar)
     document.querySelectorAll('.lang-item').forEach(btn => {
         btn.addEventListener('click', () => {
             setLanguage(btn.dataset.lang, true);
@@ -549,9 +369,6 @@ function setupMenus() {
         });
     });
 
-
-
-    // Download links
     document.querySelectorAll('[data-url]').forEach(btn => {
         btn.addEventListener('click', () => {
             window.electronAPI.openUrl(btn.dataset.url);
@@ -559,18 +376,13 @@ function setupMenus() {
         });
     });
 
-    // Terminal header buttons
     document.getElementById('termRun').addEventListener('click', runCode);
     document.getElementById('termKill').addEventListener('click', killProcess);
     document.getElementById('termClear').addEventListener('click', clearTerminal);
     document.getElementById('termDelete').addEventListener('click', deleteTerminal);
-
     document.getElementById('termTabOutput').addEventListener('click', () => switchTermTab('output'));
     document.getElementById('termInput').addEventListener('click', openModal);
 
-
-    // Terminal input send
-    // Modal logic
     document.getElementById('closeModal').addEventListener('click', closeModal);
     document.getElementById('cancelInput').addEventListener('click', closeModal);
     document.getElementById('confirmInput').addEventListener('click', () => {
@@ -581,31 +393,19 @@ function setupMenus() {
         }
         closeModal();
     });
-    modalInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            const text = modalInput.value;
-            window.electronAPI.sendTerminalInput(text + '\n');
-            modalInput.value = '';
-            closeModal();
-        }
-    });
 
-    // SQL Refresh
     sqlRefresh.addEventListener('click', () => {
         sqlWebview.reload();
         showToast('Refreshing SQL Monitor...');
     });
 
-    // Tab close
     document.getElementById('tabCloseBtn').addEventListener('click', () => {
-        editor.value = '';
+        monacoEditor.setValue('');
         currentFilePath = null;
         isDirty = false;
-        updateAll();
         updateTabDirty();
     });
 
-    // Window controls
     document.getElementById('btnMinimize').addEventListener('click', () => window.electronAPI.windowMinimize());
     document.getElementById('btnMaximize').addEventListener('click', () => window.electronAPI.windowMaximize());
     document.getElementById('btnClose').addEventListener('click', () => window.electronAPI.windowClose());
@@ -619,7 +419,6 @@ function closeAllMenus() {
 function switchTermTab(tab) {
     const outputPanel = document.getElementById('terminalOutput');
     const tabOut = document.getElementById('termTabOutput');
-
     if (tab === 'output') {
         terminalPanel.classList.remove('terminal-hidden');
         resizeHandle.style.display = '';
@@ -644,23 +443,21 @@ async function openFile() {
     closeAllMenus();
     const result = await window.electronAPI.openFile();
     if (!result) return;
-    editor.value = result.content;
+    monacoEditor.setValue(result.content);
     currentFilePath = result.filePath;
     isDirty = false;
 
-    // Auto-detect language from extension
     const ext = result.filePath.split('.').pop().toLowerCase();
     const extMap = { py: 'Python', c: 'C', cpp: 'C++', cs: 'C#', java: 'Java', js: 'JavaScript', php: 'PHP', html: 'HTML' };
     if (extMap[ext]) setLanguage(extMap[ext], false);
 
-    updateAll();
     updateTabDirty();
     showToast(`Opened: ${result.filePath.split(/[\\/]/).pop()}`);
 }
 
 async function saveFile() {
     closeAllMenus();
-    const content = editor.value;
+    const content = monacoEditor.getValue();
     const filePath = await window.electronAPI.saveFile({ filePath: currentFilePath, content });
     if (!filePath) return;
     currentFilePath = filePath;
@@ -671,7 +468,7 @@ async function saveFile() {
 
 async function saveFileAs() {
     closeAllMenus();
-    const content = editor.value;
+    const content = monacoEditor.getValue();
     const filePath = await window.electronAPI.saveFileAs({ content });
     if (!filePath) return;
     currentFilePath = filePath;
@@ -685,13 +482,10 @@ async function saveFileAs() {
 // ══════════════════════════════════════
 async function runCode() {
     closeAllMenus();
-    const code = editor.value;
+    const code = monacoEditor.getValue();
     termStatus.textContent = 'Running';
     termStatus.className = 'term-status running';
-
-    // Switch to output tab
     switchTermTab('output');
-
     appendTerminal(`\n▶ Running ${currentLanguage} code…\n`, 'tok-info');
     await window.electronAPI.runCode({ language: currentLanguage, code });
 }
@@ -716,15 +510,12 @@ function clearTerminal() {
     terminalOutput.innerHTML = '';
 }
 
-
-
 // ══════════════════════════════════════
 // Terminal IPC
 // ══════════════════════════════════════
 function setupTerminalIPC() {
     window.electronAPI.onTerminalOutput(({ data, isError }) => {
         const cls = isError ? 'term-error' : '';
-        // Detect exit message
         if (data.includes('Process exited')) {
             termStatus.textContent = 'Idle';
             termStatus.className = 'term-status';
@@ -759,31 +550,60 @@ function setupKeyboardShortcuts() {
     });
 }
 
-// Font/zoom
-// ══════════════════════════════════════
-function adjustFontSize(delta) {
-    setFontSize(fontSize + delta);
+/**
+ * ── Mouse Wheel Zoom ───────────────────────────────────────────
+ */
+function setupMouseWheelZoom() {
+    // Window listener for UI areas outside the editor
+    window.addEventListener('wheel', (e) => {
+        if (e.ctrlKey) {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+                adjustFontSize(1);
+            } else if (e.deltaY > 0) {
+                adjustFontSize(-1);
+            }
+        }
+    }, { passive: false });
+
+    // Monaco-specific listener for the code area
+    if (monacoEditor) {
+        monacoEditor.onMouseWheel((e) => {
+            if (e.browserEvent.ctrlKey) {
+                e.browserEvent.preventDefault();
+                e.browserEvent.stopPropagation();
+                if (e.deltaY < 0) {
+                    adjustFontSize(1);
+                } else if (e.deltaY > 0) {
+                    adjustFontSize(-1);
+                }
+            }
+        });
+    }
 }
-function setFontSize(size) {
-    fontSize = Math.max(8, Math.min(32, size));
+
+function adjustFontSize(delta) {
+    fontSize = Math.max(8, Math.min(32, fontSize + delta));
+    if (monacoEditor) {
+        monacoEditor.updateOptions({ fontSize: fontSize });
+    }
     const pct = Math.round((fontSize / 14) * 100);
-    editor.style.fontSize = fontSize + 'px';
-    highlight.style.fontSize = fontSize + 'px';
-    editor.style.lineHeight = '1.7';
-    highlight.style.lineHeight = '1.7';
     statusZoom.textContent = pct + '%';
 }
 
-// ══════════════════════════════════════
-// Word wrap toggle
-// ══════════════════════════════════════
+function setFontSize(size) {
+    fontSize = size;
+    if (monacoEditor) {
+        monacoEditor.updateOptions({ fontSize: fontSize });
+    }
+    statusZoom.textContent = '100%';
+}
+
 function toggleWordWrap() {
-    wordWrap = !wordWrap;
-    const wrapVal = wordWrap ? 'pre-wrap' : 'pre';
-    editor.style.whiteSpace = wrapVal;
-    highlight.style.whiteSpace = wrapVal;
-    editor.style.overflowWrap = wordWrap ? 'break-word' : 'normal';
-    showToast(`Word wrap ${wordWrap ? 'ON' : 'OFF'}`);
+    const currentWrap = monacoEditor.getOption(monaco.editor.EditorOption.wordWrap);
+    const newWrap = currentWrap === 'on' ? 'off' : 'on';
+    monacoEditor.updateOptions({ wordWrap: newWrap });
+    showToast(`Word wrap ${newWrap === 'on' ? 'ON' : 'OFF'}`);
 }
 
 // ══════════════════════════════════════
@@ -792,24 +612,24 @@ function toggleWordWrap() {
 function setupResizeHandle() {
     const handle = document.getElementById('resizeHandle');
     const termPanel = document.getElementById('terminalPanel');
-    const editorArea = document.getElementById('editorWrapper');
     let dragging = false;
-    let startY, startH;
+    let startX, startW;
 
     handle.addEventListener('mousedown', (e) => {
         dragging = true;
-        startY = e.clientY;
-        startH = termPanel.offsetHeight;
+        startX = e.clientX;
+        startW = termPanel.offsetWidth;
         handle.classList.add('dragging');
-        document.body.style.cursor = 'row-resize';
+        document.body.style.cursor = 'col-resize';
         document.body.style.userSelect = 'none';
     });
 
     document.addEventListener('mousemove', (e) => {
         if (!dragging) return;
-        const delta = startY - e.clientY;
-        const newH = Math.max(80, Math.min(600, startH + delta));
-        termPanel.style.height = newH + 'px';
+        const delta = startX - e.clientX;
+        const newW = Math.max(100, Math.min(800, startW + delta));
+        termPanel.style.width = newW + 'px';
+        if (monacoEditor) monacoEditor.layout();
     });
 
     document.addEventListener('mouseup', () => {
@@ -818,12 +638,10 @@ function setupResizeHandle() {
         handle.classList.remove('dragging');
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
+        if (monacoEditor) monacoEditor.layout();
     });
 }
 
-// ══════════════════════════════════════
-// Toast
-// ══════════════════════════════════════
 let toastTimer;
 function showToast(msg, duration = 2500) {
     toast.textContent = msg;
@@ -831,7 +649,6 @@ function showToast(msg, duration = 2500) {
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
 }
-
 
 // ══════════════════════════════════════
 // Start

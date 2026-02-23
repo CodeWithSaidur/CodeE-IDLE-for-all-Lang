@@ -136,24 +136,25 @@
 
     <!-- Editor + Terminal -->
     <div class="editor-area">
-      <!-- Tab bar -->
-      <div class="tab-bar" id="tabBar">
-        <div class="tab active" id="mainTab">
-          <span class="tab-lang-dot" id="tabDot" style="background:#3572A5"></span>
-          <span class="tab-name" id="tabName">untitled.py</span>
-          <button class="tab-close" id="tabCloseBtn"><span class="material-icons">close</span></button>
+      <!-- Main Editor Content Section -->
+      <div class="main-editor-section" id="mainEditorSection">
+        <!-- Tab bar -->
+        <div class="tab-bar" id="tabBar">
+          <div class="tab active" id="mainTab">
+            <span class="tab-lang-dot" id="tabDot" style="background:#3572A5"></span>
+            <span class="tab-name" id="tabName">untitled.py</span>
+            <button class="tab-close" id="tabCloseBtn"><span class="material-icons">close</span></button>
+          </div>
+        </div>
+
+        <!-- Editor wrapper with Monaco -->
+        <div class="editor-wrapper" id="editorWrapper">
+          <div id="monacoContainer" style="width: 100%; height: 100%;"></div>
         </div>
       </div>
 
-      <!-- Editor wrapper with line numbers -->
-      <div class="editor-wrapper" id="editorWrapper">
-        <div class="line-numbers" id="lineNumbers">1</div>
-        <div class="editor-content">
-          <textarea id="codeEditor" class="code-editor" spellcheck="false" autocomplete="off" autocorrect="off"
-            autocapitalize="off" placeholder="Start coding…"></textarea>
-          <pre class="syntax-highlight" id="syntaxHighlight" aria-hidden="true"></pre>
-        </div>
-      </div>
+      <!-- Scripts -->
+      <script src="../node_modules/monaco-editor/min/vs/loader.js"></script>
 
       <!-- SQL embedded view -->
       <div class="sql-view hidden" id="sqlView">
@@ -165,7 +166,7 @@
         <webview id="sqlWebview" src="about:blank" style="width:100%; height:100%"></webview>
       </div>
 
-      <!-- Resize handle -->
+      <!-- Resize handle (Vertical now) -->
       <div class="resize-handle" id="resizeHandle"></div>
 
       <!-- Terminal -->
