@@ -23,6 +23,33 @@ const TEMPLATES = {
     PHP: `<?php\necho "Hello, World! From PHP\\n";\n$names = ["Alice", "Bob", "Charlie"];\nforeach ($names as $name) {\n    echo "Hello, $name!\\n";\n}\n?>\n`,
     HTML: `<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8"/>\n    <title>Hello SCode</title>\n    <style>body { background: #0f0f1a; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; }</style>\n</head>\n<body>\n    <h1>Hello from SCode!</h1>\n</body>\n</html>\n`,
     SQL: `-- SQL Example\nSELECT 'Hello World' AS Greeting;\n\nCREATE TABLE IF NOT EXISTS users (\n    id INT AUTO_INCREMENT PRIMARY KEY,\n    name VARCHAR(100)\n);\n`,
+    Ruby: `# Ruby - Hello World\nputs "Hello, World! From Ruby"\n\nnames = ["Alice", "Bob", "Charlie"]\nnames.each do |name|\n  puts "Hello, #{name}!"\nend\n`,
+    Go: `// Go - Hello World\npackage main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World! From Go")\n    names := []string{"Alice", "Bob", "Charlie"}\n    for _, name := range names {\n        fmt.Printf("Hello, %s!\\n", name)\n    }\n}\n`,
+    Rust: `// Rust - Hello World\nfn main() {\n    println!("Hello, World! From Rust");\n    let names = vec!["Alice", "Bob", "Charlie"];\n    for name in names {\n        println!("Hello, {}!", name);\n    }\n}\n`,
+    Swift: `// Swift - Hello World\nprint("Hello, World! From Swift")\n\nlet names = ["Alice", "Bob", "Charlie"]\nfor name in names {\n    print("Hello, \\(name)!")\n}\n`,
+    Kotlin: `// Kotlin - Hello World\nfun main() {\n    println("Hello, World! From Kotlin")\n    val names = listOf("Alice", "Bob", "Charlie")\n    for (name in names) {\n        println("Hello, $name!")\n    }\n}\n`,
+    Dart: `// Dart - Hello World\nvoid main() {\n  print('Hello, World! From Dart');\n  var names = ['Alice', 'Bob', 'Charlie'];\n  for (var name in names) {\n    print('Hello, $name!');\n  }\n}\n`,
+    TypeScript: `// TypeScript - Hello World\nconst greet = (name: string): string => {\n    return \`Hello, \${name}!\`;\n};\n\nconsole.log("Hello from SCode (TypeScript)");\nconst names: string[] = ["Alice", "Bob", "Charlie"];\nnames.forEach(name => console.log(greet(name)));\n`,
+    'Bash/Shell': `#!/bin/bash\n# Bash - Hello World\necho "Hello, World! From Bash"\n\nnames=("Alice" "Bob" "Charlie")\nfor name in "\${names[@]}"; do\n    echo "Hello, $name!"\ndone\n`,
+    PowerShell: `# PowerShell - Hello World\nWrite-Host "Hello, World! From PowerShell"\n\n$names = "Alice", "Bob", "Charlie"\nforeach ($name in $names) {\n    Write-Host "Hello, $name!"\n}\n`,
+    Assembly: `; Assembly (x86-64) - Hello World\nsection .data\n    msg db 'Hello, World!', 0xA\n    len equ $ - msg\n\nsection .text\n    global _start\n\n_start:\n    mov rax, 1          ; sys_write\n    mov rdi, 1          ; stdout\n    mov rsi, msg\n    mov rdx, len\n    syscall\n\n    mov rax, 60         ; sys_exit\n    xor rdi, rdi\n    syscall\n`,
+    Fortran: `! Fortran - Hello World\nprogram hello\n    print *, "Hello, World! From Fortran"\nend program hello\n`,
+    Lisp: `;; Lisp - Hello World\n(format t "Hello, World! From Lisp~%")\n\n(defun greet (name)\n  (format t "Hello, ~A!~%" name))\n\n(mapcar #'greet '("Alice" "Bob" "Charlie"))\n`,
+    Lua: `-- Lua - Hello World\nprint("Hello, World! From Lua")\n\nlocal names = {"Alice", "Bob", "Charlie"}\nfor _, name in ipairs(names) do\n    print("Hello, " .. name .. "!")\nend\n`,
+    R: `# R - Hello World\ncat("Hello, World! From R\\n")\n\nnames <- c("Alice", "Bob", "Charlie")\nfor (name in names) {\n    cat(paste("Hello, ", name, "!\\n", sep=""))\n}\n`,
+    Groovy: `// Groovy - Hello World\nprintln "Hello, World! From Groovy"\n\ndef names = ["Alice", "Bob", "Charlie"]\nnames.each { println "Hello, $it!" }\n`,
+    MATLAB: `% MATLAB - Hello World\ndisp('Hello, World! From MATLAB');\n\nnames = {'Alice', 'Bob', 'Charlie'};\nfor i = 1:length(names)\n    fprintf('Hello, %s!\\n', names{i});\nend\n`,
+    Perl: `# Perl - Hello World\nprint "Hello, World! From Perl\\n";\n\nmy @names = ("Alice", "Bob", "Charlie");\nforeach my $name (@names) {\n    print "Hello, $name!\\n";\n}\n`,
+    Scala: `object HelloWorld {\n  fun main(args: Array[String]) {\n    println("Hello, World! From Scala")\n    val names = List("Alice", "Bob", "Charlie")\n    names.foreach(name => println(s"Hello, $name!"))\n  }\n}\n`,
+    Zig: `const std = @import("std");\n\npub fn main() !void {\n    const stdout = std.io.getStdOut().writer();\n    try stdout.print("Hello, World! From Zig\\n", .{});\n}\n`,
+    Elixir: `IO.puts "Hello, World! From Elixir"\n\nnames = ["Alice", "Bob", "Charlie"]\nEnum.each(names, fn name -> IO.puts "Hello, #{name}!" end)\n`,
+    Erlang: `-module(hello).\n-export([hello_world/0]).\n\nhello_world() ->\n    io:format("Hello, World! From Erlang~n").\n`,
+    Ada: `with Ada.Text_IO; use Ada.Text_IO;\nprocedure Hello is\nbegin\n    Put_Line ("Hello, World! From Ada");\nend Hello;\n`,
+    'F#': `printfn "Hello, World! From F#"\n\nlet names = ["Alice"; "Bob"; "Charlie"]\nnames |> List.iter (printfn "Hello, %s!")\n`,
+    OCaml: `print_endline "Hello, World! From OCaml";;\n\nlet names = ["Alice"; "Bob"; "Charlie"] in\nList.iter (fun name -> print_endline ("Hello, " ^ name ^ "!")) names;;\n`,
+    Prolog: `:- initialization(main).\nmain :- write('Hello, World! From Prolog'), nl, halt.\n`,
+    COBOL: `       IDENTIFICATION DIVISION.\n       PROGRAM-ID. HELLO-WORLD.\n       PROCEDURE DIVISION.\n           DISPLAY 'Hello, World! From COBOL'.\n           STOP RUN.\n`,
+    Binary: `01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100\n`,
 };
 
 // ── Language mapping for Monaco ──────────────────────────────
@@ -33,9 +60,41 @@ const MONACO_LANGS = {
     'C#': 'csharp',
     Java: 'java',
     JavaScript: 'javascript',
+    TypeScript: 'typescript',
     PHP: 'php',
     HTML: 'html',
-    SQL: 'sql'
+    SQL: 'sql',
+    Ruby: 'ruby',
+    Go: 'go',
+    Rust: 'rust',
+    Swift: 'swift',
+    Kotlin: 'kotlin',
+    Dart: 'dart',
+    'Bash/Shell': 'shell',
+    PowerShell: 'powershell',
+    Assembly: 'asm',
+    Fortran: 'fortran',
+    Lisp: 'lisp',
+    Lua: 'lua',
+    R: 'r',
+    Groovy: 'groovy',
+    MATLAB: 'matlab',
+    Perl: 'perl',
+    Scala: 'scala',
+    Zig: 'zig',
+    Elixir: 'elixir',
+    Erlang: 'erlang',
+    Ada: 'ada',
+    'F#': 'fsharp',
+    OCaml: 'ocaml',
+    Prolog: 'prolog',
+    COBOL: 'cobol',
+    Binary: 'plaintext',
+    Delphi: 'pascal',
+    VBA: 'vb',
+    GDScript: 'python',
+    MicroPython: 'python',
+    Mojo: 'python'
 };
 
 const LANG_CONFIG = {
@@ -45,9 +104,41 @@ const LANG_CONFIG = {
     'C#': { ext: 'cs', dot: '#178600', label: 'C#' },
     Java: { ext: 'java', dot: '#b07219', label: 'Java' },
     JavaScript: { ext: 'js', dot: '#f1e05a', label: 'JavaScript' },
+    TypeScript: { ext: 'ts', dot: '#3178c6', label: 'TypeScript' },
     PHP: { ext: 'php', dot: '#4F5D95', label: 'PHP' },
     HTML: { ext: 'html', dot: '#e34c26', label: 'HTML' },
     SQL: { ext: 'sql', dot: '#e38c00', label: 'SQL' },
+    Ruby: { ext: 'rb', dot: '#701516', label: 'Ruby' },
+    Go: { ext: 'go', dot: '#00ADD8', label: 'Go' },
+    Rust: { ext: 'rs', dot: '#dea584', label: 'Rust' },
+    Swift: { ext: 'swift', dot: '#F05138', label: 'Swift' },
+    Kotlin: { ext: 'kt', dot: '#A97BFF', label: 'Kotlin' },
+    Dart: { ext: 'dart', dot: '#00B4AB', label: 'Dart' },
+    'Bash/Shell': { ext: 'sh', dot: '#89e051', label: 'Bash/Shell' },
+    PowerShell: { ext: 'ps1', dot: '#012456', label: 'PowerShell' },
+    Assembly: { ext: 'asm', dot: '#6E4C13', label: 'Assembly' },
+    Fortran: { ext: 'f', dot: '#4d41b1', label: 'Fortran' },
+    Lisp: { ext: 'lisp', dot: '#3fb68b', label: 'Lisp' },
+    Lua: { ext: 'lua', dot: '#000080', label: 'Lua' },
+    R: { ext: 'r', dot: '#198CE7', label: 'R' },
+    Groovy: { ext: 'groovy', dot: '#427819', label: 'Groovy' },
+    MATLAB: { ext: 'm', dot: '#e16737', label: 'MATLAB' },
+    Perl: { ext: 'pl', dot: '#0298c3', label: 'Perl' },
+    Scala: { ext: 'scala', dot: '#c22d40', label: 'Scala' },
+    Zig: { ext: 'zig', dot: '#ec915c', label: 'Zig' },
+    Elixir: { ext: 'ex', dot: '#6e4a7e', label: 'Elixir' },
+    Erlang: { ext: 'erl', dot: '#B83998', label: 'Erlang' },
+    Ada: { ext: 'ada', dot: '#02f88d', label: 'Ada' },
+    'F#': { ext: 'fs', dot: '#b845fc', label: 'F#' },
+    OCaml: { ext: 'ml', dot: '#ef7a08', label: 'OCaml' },
+    Prolog: { ext: 'pl', dot: '#74283c', label: 'Prolog' },
+    COBOL: { ext: 'cob', dot: '#005ca5', label: 'COBOL' },
+    Binary: { ext: 'bin', dot: '#7f8c8d', label: 'Binary' },
+    Delphi: { ext: 'pas', dot: '#B0171F', label: 'Delphi' },
+    VBA: { ext: 'vba', dot: '#867db1', label: 'VBA' },
+    GDScript: { ext: 'gd', dot: '#355570', label: 'GDScript' },
+    MicroPython: { ext: 'py', dot: '#3776AB', label: 'MicroPython' },
+    Mojo: { ext: 'mojo', dot: '#ff4b11', label: 'Mojo' }
 };
 
 // ── DOM refs ─────────────────────────────────────────────────
@@ -159,7 +250,7 @@ function init() {
  * 3. Supplement Monaco completions
  */
 async function initKeywords() {
-    const langs = ['Python', 'C', 'Cpp', 'CSharp', 'Java', 'JavaScript', 'PHP', 'HTML', 'SQL'];
+    const langs = ['Python', 'C', 'Cpp', 'CSharp', 'Java', 'JavaScript', 'TypeScript', 'PHP', 'HTML', 'SQL', 'Ruby', 'Go', 'Rust', 'Swift', 'Kotlin', 'Dart', 'Bash/Shell', 'PowerShell', 'Assembly', 'Fortran', 'Lisp', 'Lua', 'R', 'Groovy', 'MATLAB', 'Perl', 'Scala', 'Zig', 'Elixir', 'Erlang', 'Ada', 'FSharp', 'OCaml', 'Prolog', 'COBOL'];
     const promises = langs.map(async (lang) => {
         try {
             const response = await fetch(`./keywords/${lang}/keywords.json`);
@@ -406,6 +497,15 @@ function setupMenus() {
         updateTabDirty();
     });
 
+    document.getElementById('btnBinaryConv').addEventListener('click', openBinaryModal);
+    document.getElementById('closeBinaryModal').addEventListener('click', closeBinaryModal);
+    document.getElementById('btnTxtToBin').addEventListener('click', textToBinary);
+    document.getElementById('btnBinToTxt').addEventListener('click', binaryToText);
+    document.getElementById('btnApplyToEditor').addEventListener('click', applyBinaryToEditor);
+
+    document.getElementById('closeAlertModal').addEventListener('click', () => document.getElementById('alertModal').classList.add('hidden'));
+    document.getElementById('btnAlertOk').addEventListener('click', () => document.getElementById('alertModal').classList.add('hidden'));
+
     document.getElementById('btnMinimize').addEventListener('click', () => window.electronAPI.windowMinimize());
     document.getElementById('btnMaximize').addEventListener('click', () => window.electronAPI.windowMaximize());
     document.getElementById('btnClose').addEventListener('click', () => window.electronAPI.windowClose());
@@ -436,6 +536,53 @@ function closeModal() {
     inputModal.classList.add('hidden');
 }
 
+// ── Binary Converter Logic ────────────────────────────
+function openBinaryModal() {
+    closeAllMenus();
+    document.getElementById('binaryModal').classList.remove('hidden');
+    document.getElementById('convText').value = monacoEditor.getValue();
+    document.getElementById('convText').focus();
+}
+
+function closeBinaryModal() {
+    document.getElementById('binaryModal').classList.add('hidden');
+}
+
+function textToBinary() {
+    const text = document.getElementById('convText').value;
+    const binary = text.split('').map(char => {
+        return char.charCodeAt(0).toString(2).padStart(8, '0');
+    }).join(' ');
+    document.getElementById('convBinary').value = binary;
+}
+
+function binaryToText() {
+    const binary = document.getElementById('convBinary').value;
+    try {
+        const text = binary.split(/\s+/).map(bin => {
+            if (!bin) return '';
+            return String.fromCharCode(parseInt(bin, 2));
+        }).join('');
+        document.getElementById('convText').value = text;
+    } catch (e) {
+        showToast('Invalid binary format!');
+    }
+}
+
+function applyBinaryToEditor() {
+    const binary = document.getElementById('convBinary').value;
+    const text = document.getElementById('convText').value;
+    // Use binary if focused/filled, else text
+    const result = binary || text;
+    if (result) {
+        monacoEditor.setValue(result);
+        isDirty = true;
+        updateTabDirty();
+    }
+    closeBinaryModal();
+    showToast('Applied to editor');
+}
+
 // ══════════════════════════════════════
 // File operations
 // ══════════════════════════════════════
@@ -448,7 +595,13 @@ async function openFile() {
     isDirty = false;
 
     const ext = result.filePath.split('.').pop().toLowerCase();
-    const extMap = { py: 'Python', c: 'C', cpp: 'C++', cs: 'C#', java: 'Java', js: 'JavaScript', php: 'PHP', html: 'HTML' };
+    const extMap = {
+        py: 'Python', c: 'C', cpp: 'C++', cs: 'C#', java: 'Java', js: 'JavaScript', ts: 'TypeScript', php: 'PHP', html: 'HTML', sql: 'SQL',
+        rb: 'Ruby', go: 'Go', rs: 'Rust', swift: 'Swift', kt: 'Kotlin', dart: 'Dart', sh: 'Bash/Shell', ps1: 'PowerShell',
+        asm: 'Assembly', f: 'Fortran', lisp: 'Lisp', lua: 'Lua', r: 'R', groovy: 'Groovy', m: 'MATLAB', pl: 'Perl',
+        scala: 'Scala', zig: 'Zig', ex: 'Elixir', erl: 'Erlang', ada: 'Ada', fs: 'F#', ml: 'OCaml', cob: 'COBOL', bin: 'Binary',
+        pas: 'Delphi', vba: 'VBA', gd: 'GDScript', mojo: 'Mojo'
+    };
     if (extMap[ext]) setLanguage(extMap[ext], false);
 
     updateTabDirty();
@@ -513,15 +666,28 @@ function clearTerminal() {
 // ══════════════════════════════════════
 // Terminal IPC
 // ══════════════════════════════════════
+// ── Terminal IPC ──────────────────────────────────────
 function setupTerminalIPC() {
-    window.electronAPI.onTerminalOutput(({ data, isError }) => {
+    window.electronAPI.onTerminalOutput(({ data, isError, isExit }) => {
         const cls = isError ? 'term-error' : '';
-        if (data.includes('Process exited')) {
+        if (isExit) {
             termStatus.textContent = 'Idle';
             termStatus.className = 'term-status';
         }
+
+        // If it's the "Tip" we added, show it as a popup too
+        if (data.includes('💡 Tip: Maske sure') || data.includes('Make sure') && data.includes('environment variable')) {
+            showAlert('Setup Required', data.trim());
+        }
+
         appendTerminal(data, cls);
     });
+}
+
+function showAlert(title, message) {
+    document.getElementById('alertTitle').textContent = title;
+    document.getElementById('alertMessage').textContent = message.replace('💡 Tip: ', '');
+    document.getElementById('alertModal').classList.remove('hidden');
 }
 
 function appendTerminal(text, cls = '') {

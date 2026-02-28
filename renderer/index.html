@@ -56,6 +56,8 @@
             <button class="drop-item" id="btnClear"><span class="material-icons drop-icon">delete_sweep</span>Clear
               Terminal<span class="shortcut">Alt+D</span></button>
             <div class="drop-sep"></div>
+            <button class="drop-item" id="btnBinaryConv"><span class="material-icons drop-icon">transform</span>Binary
+              Converter</button>
             <button class="drop-item" id="btnWordWrap"><span class="material-icons drop-icon">wrap_text</span>Toggle
               Word Wrap</button>
           </div>
@@ -76,12 +78,76 @@
                 style="background:#b07219"></span>Java</button>
             <button class="drop-item lang-item" data-lang="JavaScript"><span class="lang-dot"
                 style="background:#f1e05a"></span>JavaScript</button>
+            <button class="drop-item lang-item" data-lang="TypeScript"><span class="lang-dot"
+                style="background:#3178c6"></span>TypeScript</button>
             <button class="drop-item lang-item" data-lang="PHP"><span class="lang-dot"
                 style="background:#4F5D95"></span>PHP</button>
+            <button class="drop-item lang-item" data-lang="Ruby"><span class="lang-dot"
+                style="background:#701516"></span>Ruby</button>
+            <button class="drop-item lang-item" data-lang="Go"><span class="lang-dot"
+                style="background:#00ADD8"></span>Go</button>
+            <button class="drop-item lang-item" data-lang="Rust"><span class="lang-dot"
+                style="background:#dea584"></span>Rust</button>
+            <button class="drop-item lang-item" data-lang="Swift"><span class="lang-dot"
+                style="background:#F05138"></span>Swift</button>
+            <button class="drop-item lang-item" data-lang="Kotlin"><span class="lang-dot"
+                style="background:#A97BFF"></span>Kotlin</button>
+            <button class="drop-item lang-item" data-lang="Dart"><span class="lang-dot"
+                style="background:#00B4AB"></span>Dart</button>
+            <button class="drop-item lang-item" data-lang="Bash/Shell"><span class="lang-dot"
+                style="background:#89e051"></span>Bash/Shell</button>
+            <button class="drop-item lang-item" data-lang="PowerShell"><span class="lang-dot"
+                style="background:#012456"></span>PowerShell</button>
             <button class="drop-item lang-item" data-lang="HTML"><span class="lang-dot"
                 style="background:#e34c26"></span>HTML</button>
             <button class="drop-item lang-item" data-lang="SQL"><span class="lang-dot"
                 style="background:#e38c00"></span>SQL</button>
+            <button class="drop-item lang-item" data-lang="Assembly"><span class="lang-dot"
+                style="background:#6E4C13"></span>Assembly</button>
+            <button class="drop-item lang-item" data-lang="Fortran"><span class="lang-dot"
+                style="background:#4d41b1"></span>Fortran</button>
+            <button class="drop-item lang-item" data-lang="Lisp"><span class="lang-dot"
+                style="background:#3fb68b"></span>Lisp</button>
+            <button class="drop-item lang-item" data-lang="Lua"><span class="lang-dot"
+                style="background:#000080"></span>Lua</button>
+            <button class="drop-item lang-item" data-lang="R"><span class="lang-dot"
+                style="background:#198CE7"></span>R</button>
+            <button class="drop-item lang-item" data-lang="Groovy"><span class="lang-dot"
+                style="background:#427819"></span>Groovy</button>
+            <button class="drop-item lang-item" data-lang="MATLAB"><span class="lang-dot"
+                style="background:#e16737"></span>MATLAB</button>
+            <button class="drop-item lang-item" data-lang="Perl"><span class="lang-dot"
+                style="background:#0298c3"></span>Perl</button>
+            <button class="drop-item lang-item" data-lang="Scala"><span class="lang-dot"
+                style="background:#c22d40"></span>Scala</button>
+            <button class="drop-item lang-item" data-lang="Zig"><span class="lang-dot"
+                style="background:#ec915c"></span>Zig</button>
+            <button class="drop-item lang-item" data-lang="Elixir"><span class="lang-dot"
+                style="background:#6e4a7e"></span>Elixir</button>
+            <button class="drop-item lang-item" data-lang="Erlang"><span class="lang-dot"
+                style="background:#B83998"></span>Erlang</button>
+            <button class="drop-item lang-item" data-lang="Ada"><span class="lang-dot"
+                style="background:#02f88d"></span>Ada</button>
+            <button class="drop-item lang-item" data-lang="F#"><span class="lang-dot"
+                style="background:#b845fc"></span>F#</button>
+            <button class="drop-item lang-item" data-lang="OCaml"><span class="lang-dot"
+                style="background:#ef7a08"></span>OCaml</button>
+            <button class="drop-item lang-item" data-lang="Prolog"><span class="lang-dot"
+                style="background:#74283c"></span>Prolog</button>
+            <button class="drop-item lang-item" data-lang="COBOL"><span class="lang-dot"
+                style="background:#005ca5"></span>COBOL</button>
+            <button class="drop-item lang-item" data-lang="Binary"><span class="lang-dot"
+                style="background:#7f8c8d"></span>Binary</button>
+            <button class="drop-item lang-item" data-lang="Delphi"><span class="lang-dot"
+                style="background:#B0171F"></span>Delphi</button>
+            <button class="drop-item lang-item" data-lang="VBA"><span class="lang-dot"
+                style="background:#867db1"></span>VBA</button>
+            <button class="drop-item lang-item" data-lang="GDScript"><span class="lang-dot"
+                style="background:#355570"></span>GDScript</button>
+            <button class="drop-item lang-item" data-lang="MicroPython"><span class="lang-dot"
+                style="background:#3776AB"></span>MicroPython</button>
+            <button class="drop-item lang-item" data-lang="Mojo"><span class="lang-dot"
+                style="background:#ff4b11"></span>Mojo</button>
           </div>
         </div>
         <!-- Download -->
@@ -215,6 +281,52 @@
       <div class="modal-footer">
         <button class="modal-btn secondary" id="cancelInput">Cancel</button>
         <button class="modal-btn primary" id="confirmInput">Send Input</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Modal -->
+  <div class="modal-overlay hidden" id="alertModal">
+    <div class="modal-content alert-content">
+      <div class="modal-header">
+        <h3 id="alertTitle">Attention</h3>
+        <button class="modal-close" id="closeAlertModal"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body">
+        <p id="alertMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn primary" id="btnAlertOk">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Binary Converter Modal -->
+  <div class="modal-overlay hidden" id="binaryModal">
+    <div class="modal-content bin-conv-content">
+      <div class="modal-header">
+        <h3><span class="material-icons"
+            style="vertical-align: middle; margin-right: 8px;">settings_ethernet</span>Binary Converter</h3>
+        <button class="modal-close" id="closeBinaryModal"><span class="material-icons">close</span></button>
+      </div>
+      <div class="modal-body bin-conv-body">
+        <div class="conv-group">
+          <label>Text Content</label>
+          <textarea id="convText" class="modal-textarea" placeholder="Enter text here..."></textarea>
+        </div>
+        <div class="conv-arrows">
+          <span class="material-icons">swap_vert</span>
+        </div>
+        <div class="conv-group">
+          <label>Binary Output (8-bit)</label>
+          <textarea id="convBinary" class="modal-textarea" placeholder="Binary code will appear here..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn secondary" id="btnTxtToBin">Text → Binary</button>
+        <button class="modal-btn secondary" id="btnBinToTxt">Binary → Text</button>
+        <div style="flex: 1;"></div>
+        <button class="modal-btn primary" id="btnApplyToEditor">Use in Editor</button>
       </div>
     </div>
   </div>

@@ -448,8 +448,23 @@ pre {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border);
   z-index: 9999;
   padding: 4px 0;
+  max-height: 480px;
+  overflow-y: auto;
   backdrop-filter: blur(12px);
   animation: dropIn 0.12s ease;
+}
+
+.dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background: var(--border-hi);
+  border-radius: 10px;
 }
 
 .dropdown.open {
@@ -1189,4 +1204,66 @@ pre {
 .editor-wrapper,
 .terminal-panel {
   animation: fadeIn 0.3s ease;
+}
+
+/* ── Binary Converter Modal Specifics ── */
+.bin-conv-content {
+  max-width: 600px;
+}
+
+.bin-conv-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.conv-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.conv-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.conv-arrows {
+  display: flex;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.bin-conv-body .modal-textarea {
+  height: 120px;
+  background: var(--bg-deepest);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  color: var(--text-primary);
+  font-family: var(--font-code);
+  font-size: 13px;
+  resize: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.bin-conv-body .modal-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-pale);
+}
+
+.alert-content {
+  max-width: 400px;
+  border-top: 4px solid var(--accent);
+}
+
+#alertMessage {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  white-space: pre-wrap;
 }
